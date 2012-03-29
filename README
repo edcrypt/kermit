@@ -8,3 +8,4 @@ through it is to follow the history of commits. Interesting tags
 parser-boilerplate - just cruft to make parser run
 first-parse-test - enough support to make the first test of parser pass
 parser-complete - implement enough of parser to run simple ifs and whiles
+compiler-start - pass the first compiler test

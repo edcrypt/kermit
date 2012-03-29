@@ -55,11 +55,19 @@ class BinOp(Node):
         self.left = left
         self.right = right
 
+    def compile(self, ctx):
+        self.left.compile(ctx)
+        self.right.compile(ctx)
+        ctx.emit(bytecode.BINOP[self.op])
+
 class Variable(Node):
     """ Variable reference
     """
     def __init__(self, varname):
         self.varname = varname
+
+    def compile(self, ctx):
+        ctx.emit(bytecode.LOAD_VAR, ctx.register_var(self.varname))
 
 class Assignment(Node):
     """ Assign to a variable

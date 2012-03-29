@@ -11,4 +11,15 @@ class TestCompiler(object):
         self.check_compile("1;", '''
         LOAD_CONSTANT 0
         DISCARD_TOP 0
+        RETURN 0
         ''')
+
+    def test_add(self):
+        self.check_compile('a + 1;', '''
+        LOAD_VAR 0
+        LOAD_CONSTANT 0
+        BINARY_ADD 0
+        DISCARD_TOP 0
+        RETURN 0
+        ''')
+

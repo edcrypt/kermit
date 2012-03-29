@@ -1,9 +1,11 @@
 
-bytecodes = ['LOAD_CONSTANT', 'LOAD_VARIABLE', 'ASSIGN', 'DISCARD_TOP',
+bytecodes = ['LOAD_CONSTANT', 'LOAD_VAR', 'ASSIGN', 'DISCARD_TOP',
              'JUMP_IF_FALSE', 'JUMP_BACKWARD', 'BINARY_ADD', 'BINARY_SUB',
-             'BINARY_EQ']
+             'BINARY_EQ', 'RETURN']
 for i, bytecode in enumerate(bytecodes):
     globals()[bytecode] = i
+
+BINOP = {'+': BINARY_ADD, '-': BINARY_SUB, '==': BINARY_EQ}
 
 class CompilerContext(object):
     def __init__(self):
@@ -49,4 +51,5 @@ class ByteCode(object):
 def compile_ast(astnode):
     c = CompilerContext()
     astnode.compile(c)
+    c.emit(RETURN, 0)
     return c.create_bytecode()
