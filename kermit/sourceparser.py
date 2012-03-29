@@ -56,17 +56,27 @@ class Assignment(Node):
         self.varname = varname
         self.expr = expr
 
+class While(Node):
+    """ Simple loop
+    """
+    def __init__(self, cond, body):
+        self.cond = cond
+        self.body = body
+
 class Transformer(object):
     """ Transforms AST from the obscure format given to us by the ennfparser
     to something easier to work with
     """
-    def visit_main(self, node):
-        star = node.children[0]
+    def _grab_stmts(self, star):
         stmts = []
         while len(star.children) == 2:
             stmts.append(self.visit_stmt(star.children[0]))
             star = star.children[1]
         stmts.append(self.visit_stmt(star.children[0]))
+        return stmts
+    
+    def visit_main(self, node):
+        stmts = self._grab_stmts(node.children[0])
         return Block(stmts)
 
     def visit_stmt(self, node):
@@ -75,6 +85,10 @@ class Transformer(object):
         if len(node.children) == 4:
             return Assignment(node.children[0].additional_info,
                               self.visit_expr(node.children[2]))
+        if node.children[0].additional_info == 'while':
+            cond = self.visit_expr(node.children[2])
+            stmts = self._grab_stmts(node.children[5])
+            return While(cond, Block(stmts))
         raise NotImplementedError
 
     def visit_expr(self, node):
