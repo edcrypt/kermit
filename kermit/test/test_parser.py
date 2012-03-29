@@ -9,3 +9,11 @@ def test_parse_basic():
     assert parse('1 + a;') == Block([Stmt(BinOp('+', ConstantInt(1),
                                                 Variable('a')))])
 
+def test_multiple_statements():
+    assert parse('''
+    1 + 2;
+    c;
+    e;
+    ''') == Block([Stmt(BinOp("+", ConstantInt(1), ConstantInt(2))),
+                   Stmt(Variable('c')),
+                   Stmt(Variable('e'))])

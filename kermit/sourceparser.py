@@ -61,7 +61,13 @@ class Transformer(object):
     to something easier to work with
     """
     def visit_main(self, node):
-        return Block([self.visit_stmt(node.children[0].children[0])])
+        star = node.children[0]
+        stmts = []
+        while len(star.children) == 2:
+            stmts.append(self.visit_stmt(star.children[0]))
+            star = star.children[1]
+        stmts.append(self.visit_stmt(star.children[0]))
+        return Block(stmts)
 
     def visit_stmt(self, node):
         return Stmt(self.visit_expr(node.children[0]))
