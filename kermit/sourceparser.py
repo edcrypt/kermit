@@ -77,7 +77,9 @@ class Transformer(object):
         chnode = node.children[0]
         if chnode.symbol == 'DECIMAL':
             return ConstantInt(int(chnode.additional_info))
-        xxx
+        if chnode.symbol == 'VARIABLE':
+            return Variable(chnode.additional_info)
+        raise NotImplementedError
 
 transformer = Transformer()
 
