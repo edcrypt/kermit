@@ -1,6 +1,6 @@
 
 from kermit.sourceparser import parse, Stmt, Block, ConstantInt, BinOp,\
-     Variable
+     Variable, Assignment
 
 def test_parse_basic():
     assert parse('13;') == Block([Stmt(ConstantInt(13))])
@@ -17,3 +17,6 @@ def test_multiple_statements():
     ''') == Block([Stmt(BinOp("+", ConstantInt(1), ConstantInt(2))),
                    Stmt(Variable('c')),
                    Stmt(Variable('e'))])
+
+def test_assignment():
+    assert parse('a = 3;') == Block([Assignment('a', ConstantInt(3))])

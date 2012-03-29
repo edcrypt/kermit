@@ -70,7 +70,12 @@ class Transformer(object):
         return Block(stmts)
 
     def visit_stmt(self, node):
-        return Stmt(self.visit_expr(node.children[0]))
+        if len(node.children) == 2:
+            return Stmt(self.visit_expr(node.children[0]))
+        if len(node.children) == 4:
+            return Assignment(node.children[0].additional_info,
+                              self.visit_expr(node.children[2]))
+        raise NotImplementedError
 
     def visit_expr(self, node):
         if len(node.children) == 1:
