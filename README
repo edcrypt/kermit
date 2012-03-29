@@ -1,0 +1,10 @@
+
+Kermit - an example interpreter
+-------------------------------
+
+This is an example interpreter written using PyPy. A preferred way to walk
+through it is to follow the history of commits. Interesting tags
+
+parser-boilerplate - just cruft to make parser run
+first-parse-test - enough support to make the first test of parser pass
+parser-complete - implement enough of parser to run simple ifs and whiles
