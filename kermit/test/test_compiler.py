@@ -29,3 +29,13 @@ class TestCompiler(object):
         PRINT 0
         RETURN 0
         ''')
+
+    def test_while(self):
+        self.check_compile('while (1) { print 1; }', '''
+        LOAD_CONSTANT 0
+        JUMP_IF_FALSE 10
+        LOAD_CONSTANT 1
+        PRINT 0
+        JUMP_BACKWARD 0
+        RETURN 0
+        ''')

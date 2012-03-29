@@ -83,6 +83,15 @@ class While(Node):
         self.cond = cond
         self.body = body
 
+    def compile(self, ctx):
+        pos = len(ctx.data)
+        self.cond.compile(ctx)
+        ctx.emit(bytecode.JUMP_IF_FALSE, 0)
+        jmp_pos = len(ctx.data) - 1
+        self.body.compile(ctx)
+        ctx.emit(bytecode.JUMP_BACKWARD, pos)
+        ctx.data[jmp_pos] = chr(len(ctx.data))
+
 class If(Node):
     """ A very simple if
     """
