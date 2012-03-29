@@ -61,6 +61,15 @@ class Transformer(object):
     to something easier to work with
     """
     def visit_main(self, node):
+        return Block([self.visit_stmt(node.children[0].children[0])])
+
+    def visit_stmt(self, node):
+        return Stmt(self.visit_expr(node.children[0]))
+
+    def visit_expr(self, node):
+        chnode = node.children[0]
+        if chnode.symbol == 'DECIMAL':
+            return ConstantInt(int(chnode.additional_info))
         xxx
 
 transformer = Transformer()

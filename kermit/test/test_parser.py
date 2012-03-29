@@ -8,4 +8,4 @@ def test_parse_basic():
                                                 ConstantInt(2)))])
     assert parse('1 + a;') == Block([Stmt(BinOp('+', ConstantInt(1),
                                                 Variable('a')))])
-    
+
