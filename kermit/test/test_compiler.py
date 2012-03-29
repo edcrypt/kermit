@@ -23,3 +23,9 @@ class TestCompiler(object):
         RETURN 0
         ''')
 
+    def test_print(self):
+        self.check_compile('print a;', '''
+        LOAD_VAR 0
+        PRINT 0
+        RETURN 0
+        ''')

@@ -94,6 +94,10 @@ class Print(Node):
     def __init__(self, expr):
         self.expr = expr
 
+    def compile(self, ctx):
+        self.expr.compile(ctx)
+        ctx.emit(bytecode.PRINT, 0)
+
 class Transformer(object):
     """ Transforms AST from the obscure format given to us by the ennfparser
     to something easier to work with
