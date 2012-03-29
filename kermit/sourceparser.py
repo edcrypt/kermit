@@ -63,6 +63,13 @@ class While(Node):
         self.cond = cond
         self.body = body
 
+class If(Node):
+    """ A very simple if
+    """
+    def __init__(self, cond, body):
+        self.cond = cond
+        self.body = body        
+
 class Transformer(object):
     """ Transforms AST from the obscure format given to us by the ennfparser
     to something easier to work with
@@ -89,6 +96,10 @@ class Transformer(object):
             cond = self.visit_expr(node.children[2])
             stmts = self._grab_stmts(node.children[5])
             return While(cond, Block(stmts))
+        if node.children[0].additional_info == 'if':
+            cond = self.visit_expr(node.children[2])
+            stmts = self._grab_stmts(node.children[5])
+            return If(cond, Block(stmts))
         raise NotImplementedError
 
     def visit_expr(self, node):
