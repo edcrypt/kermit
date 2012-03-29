@@ -90,6 +90,10 @@ class If(Node):
         self.cond = cond
         self.body = body        
 
+class Print(Node):
+    def __init__(self, expr):
+        self.expr = expr
+
 class Transformer(object):
     """ Transforms AST from the obscure format given to us by the ennfparser
     to something easier to work with
@@ -120,6 +124,8 @@ class Transformer(object):
             cond = self.visit_expr(node.children[2])
             stmts = self._grab_stmts(node.children[5])
             return If(cond, Block(stmts))
+        if node.children[0].additional_info == 'print':
+            return Print(self.visit_expr(node.children[1]))
         raise NotImplementedError
 
     def visit_expr(self, node):
