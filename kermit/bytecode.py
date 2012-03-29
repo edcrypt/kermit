@@ -28,10 +28,14 @@ class CompilerContext(object):
         self.data.append(chr(bc))
         self.data.append(chr(arg))
 
+    def create_bytecode(self):
+        return ByteCode("".join(self.data), self.constants[:], len(self.names))
+
 class ByteCode(object):
-    def __init__(self, code, constants):
+    def __init__(self, code, constants, numvars):
         self.code = code
         self.constants = constants
+        self.numvars = numvars
 
     def dump(self):
         lines = []
@@ -39,7 +43,7 @@ class ByteCode(object):
         for i in range(0, len(self.code), 2):
             c = self.code[i]
             c2 = self.code[i + 1]
-            lines.append(bytecodes[ord(c)] + " " + str(bytecodes[ord(c2)]))
+            lines.append(bytecodes[ord(c)] + " " + str(ord(c2)))
         return '\n'.join(lines)
 
 def compile_ast(astnode):

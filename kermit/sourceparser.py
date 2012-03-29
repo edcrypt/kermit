@@ -2,6 +2,7 @@
 import py
 from pypy.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 from kermit import kermitdir
+from kermit import bytecode
 
 grammar = py.path.local(kermitdir).join('grammar.txt').read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
@@ -23,17 +24,28 @@ class Block(Node):
     def __init__(self, stmts):
         self.stmts = stmts
 
+    def compile(self, ctx):
+        for stmt in self.stmts:
+            stmt.compile(ctx)
+
 class Stmt(Node):
     """ A single statement
     """
     def __init__(self, expr):
         self.expr = expr
 
+    def compile(self, ctx):
+        self.expr.compile(ctx)
+        ctx.emit(bytecode.DISCARD_TOP)
+
 class ConstantInt(Node):
     """ Represent a constant
     """
     def __init__(self, intval):
         self.intval = intval
+
+    def compile(self, ctx):
+        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(self.intval))
 
 class BinOp(Node):
     """ A binary operation
