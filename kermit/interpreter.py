@@ -38,6 +38,9 @@ def execute(frame, bc):
             right = frame.pop()
             left = frame.pop()
             frame.push(add(left, right))
+        elif c == bytecode.PRINT:
+            item = frame.pop()
+            print item
         else:
             assert False
 
