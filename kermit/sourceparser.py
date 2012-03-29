@@ -67,6 +67,13 @@ class Transformer(object):
         return Stmt(self.visit_expr(node.children[0]))
 
     def visit_expr(self, node):
+        if len(node.children) == 1:
+            return self.visit_atom(node.children[0])
+        return BinOp(node.children[1].additional_info,
+                     self.visit_atom(node.children[0]),
+                     self.visit_expr(node.children[2]))
+
+    def visit_atom(self, node):
         chnode = node.children[0]
         if chnode.symbol == 'DECIMAL':
             return ConstantInt(int(chnode.additional_info))

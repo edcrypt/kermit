@@ -1,8 +1,12 @@
 
+IGNORE: "[ \t\n]";
 DECIMAL: "-?0|[1-9][0-9]*";
+ADD_SYMBOL: "[-+]";
 
 main: statement* [EOF];
 
 statement: expr ";";
 
-expr: DECIMAL;
+expr: atom ADD_SYMBOL expr | atom;
+
+atom: DECIMAL;
