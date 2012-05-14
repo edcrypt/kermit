@@ -76,6 +76,10 @@ class Assignment(Node):
         self.varname = varname
         self.expr = expr
 
+    def compile(self, ctx):
+        self.expr.compile(ctx)
+        ctx.emit(bytecode.ASSIGN, ctx.register_var(self.varname))
+
 class While(Node):
     """ Simple loop
     """

@@ -1,11 +1,11 @@
 
 bytecodes = ['LOAD_CONSTANT', 'LOAD_VAR', 'ASSIGN', 'DISCARD_TOP',
              'JUMP_IF_FALSE', 'JUMP_BACKWARD', 'BINARY_ADD', 'BINARY_SUB',
-             'BINARY_EQ', 'RETURN', 'PRINT']
+             'BINARY_EQ', 'RETURN', 'PRINT', 'BINARY_LT']
 for i, bytecode in enumerate(bytecodes):
     globals()[bytecode] = i
 
-BINOP = {'+': BINARY_ADD, '-': BINARY_SUB, '==': BINARY_EQ}
+BINOP = {'+': BINARY_ADD, '-': BINARY_SUB, '==': BINARY_EQ, '<': BINARY_LT}
 
 class CompilerContext(object):
     def __init__(self):
