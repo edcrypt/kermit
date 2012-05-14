@@ -34,6 +34,8 @@ class CompilerContext(object):
         return ByteCode("".join(self.data), self.constants[:], len(self.names))
 
 class ByteCode(object):
+    _immutable_fields_ = ['code', 'constants[*]', 'numvars']
+    
     def __init__(self, code, constants, numvars):
         self.code = code
         self.constants = constants

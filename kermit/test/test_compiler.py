@@ -39,3 +39,16 @@ class TestCompiler(object):
         JUMP_BACKWARD 0
         RETURN 0
         ''')
+
+    def test_if(self):
+        self.check_compile('''
+        if (a) {
+           1;
+        }
+        ''', '''
+        LOAD_VAR 0
+        JUMP_IF_FALSE 8
+        LOAD_CONSTANT 0
+        DISCARD_TOP 0
+        RETURN 0
+        ''')

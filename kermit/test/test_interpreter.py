@@ -12,3 +12,12 @@ def test_print(capfd):
 
 def test_while():
     interpret('n = 0; while (n < 10) { n = n + 1; }')
+
+def test_if(capfd):
+    interpret('''
+    if (1) {
+       print 2;
+    }
+    ''')
+    out, err = capfd.readouterr()
+    assert out == '2\n'

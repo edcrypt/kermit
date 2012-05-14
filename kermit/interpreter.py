@@ -4,7 +4,8 @@ from kermit.bytecode import compile_ast
 from kermit import bytecode
 from pypy.rlib import jit
 
-driver = jit.JitDriver(greens = [], reds = ['pc', 'frame', 'bc', 'code'])
+driver = jit.JitDriver(greens = ['pc', 'code', 'bc'], reds = ['frame'],
+                       virtualizables=['frame'])
 
 class W_Root(object):
     pass
@@ -13,20 +14,29 @@ class W_IntObject(W_Root):
     def __init__(self, intval):
         self.intval
 
+    def add(self, other):
+        if not isinstance(other, W_IntObject):
+            raise Exception("wrong type")
+        return W_IntObject(self.intval + other.intval)
+
 class W_FloatObject(W_Root):
     def __init__(self, floatval):
         self.floatval
 
 
 class Frame(object):
+    _virtualizable2_ = ['valuestack[*]', 'valuestack_pos']
+    
     def __init__(self, bc):
         self.valuestack = [0] * 100 # safe estimate!
         self.vars = [0] * bc.numvars
         self.valuestack_pos = 0
 
     def push(self, v):
-        self.valuestack[self.valuestack_pos] = v
-        self.valuestack_pos += 1
+        pos = self.valuestack_pos
+        assert pos >= 0
+        self.valuestack[pos] = v
+        self.valuestack_pos = pos + 1
     
     def pop(self):
         new_pos = self.valuestack_pos - 1

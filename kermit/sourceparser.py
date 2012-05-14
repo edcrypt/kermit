@@ -101,7 +101,14 @@ class If(Node):
     """
     def __init__(self, cond, body):
         self.cond = cond
-        self.body = body        
+        self.body = body
+
+    def compile(self, ctx):
+        self.cond.compile(ctx)
+        ctx.emit(bytecode.JUMP_IF_FALSE, 0)
+        jmp_pos = len(ctx.data) - 1
+        self.body.compile(ctx)
+        ctx.data[jmp_pos] = chr(len(ctx.data))
 
 class Print(Node):
     def __init__(self, expr):
