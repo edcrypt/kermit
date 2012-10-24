@@ -4,7 +4,8 @@ from kermit.bytecode import compile_ast
 from kermit import bytecode
 from pypy.rlib import jit
 
-driver = jit.JitDriver(greens = ['pc', 'code', 'bc'], reds = ['frame'],
+driver = jit.JitDriver(greens = ['pc', 'code', 'bc'],
+                       reds = ['frame'],
                        virtualizables=['frame'])
 
 class W_Root(object):
@@ -12,34 +13,43 @@ class W_Root(object):
 
 class W_IntObject(W_Root):
     def __init__(self, intval):
-        self.intval
+        self.intval = intval
 
     def add(self, other):
         if not isinstance(other, W_IntObject):
             raise Exception("wrong type")
         return W_IntObject(self.intval + other.intval)
 
+    def lt(self, other): 
+        if not isinstance(other, W_IntObject):
+            raise Exception("wrong type")
+        return W_IntObject(self.intval < other.intval)       
+
 class W_FloatObject(W_Root):
     def __init__(self, floatval):
         self.floatval
 
+    #def add(self, other):
+    #    xxxx
 
 class Frame(object):
-    _virtualizable2_ = ['valuestack[*]', 'valuestack_pos']
+    _virtualizable2_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
     
     def __init__(self, bc):
-        self.valuestack = [0] * 100 # safe estimate!
-        self.vars = [0] * bc.numvars
+        self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
+        self.valuestack = [None] * 3 # safe estimate!
+        self.vars = [None] * bc.numvars
         self.valuestack_pos = 0
 
     def push(self, v):
-        pos = self.valuestack_pos
+        pos = jit.hint(self.valuestack_pos, promote=True)
         assert pos >= 0
         self.valuestack[pos] = v
         self.valuestack_pos = pos + 1
     
     def pop(self):
-        new_pos = self.valuestack_pos - 1
+        pos = jit.hint(self.valuestack_pos, promote=True)
+        new_pos = pos - 1
         assert new_pos >= 0
         v = self.valuestack[new_pos]
         self.valuestack_pos = new_pos
@@ -57,7 +67,7 @@ def execute(frame, bc):
         arg = ord(code[pc + 1])
         pc += 2
         if c == bytecode.LOAD_CONSTANT:
-            frame.push(bc.constants[arg])
+            frame.push(W_IntObject(bc.constants[arg]))
         elif c == bytecode.DISCARD_TOP:
             frame.pop()
         elif c == bytecode.RETURN:
@@ -65,11 +75,12 @@ def execute(frame, bc):
         elif c == bytecode.BINARY_ADD:
             right = frame.pop()
             left = frame.pop()
-            frame.push(add(left, right))
+            w_res = left.add(right)
+            frame.push(w_res)
         elif c == bytecode.BINARY_LT:
             right = frame.pop()
             left = frame.pop()
-            frame.push(left < right)
+            frame.push(left.lt(right))
         elif c == bytecode.JUMP_IF_FALSE:
             if not frame.pop():
                 pc = arg
