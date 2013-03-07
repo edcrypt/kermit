@@ -1,5 +1,5 @@
 
-from pypy.jit.metainterp.test.support import LLJitMixin
+from rpython.jit.metainterp.test.support import LLJitMixin
 from kermit.interpreter import interpret
 
 class TestJit(LLJitMixin):

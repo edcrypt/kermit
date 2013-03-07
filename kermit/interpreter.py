@@ -2,11 +2,15 @@
 from kermit.sourceparser import parse
 from kermit.bytecode import compile_ast
 from kermit import bytecode
-from pypy.rlib import jit
+from rpython.rlib import jit
+
+def printable_loc(pc, code, bc):
+    return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
 driver = jit.JitDriver(greens = ['pc', 'code', 'bc'],
                        reds = ['frame'],
-                       virtualizables=['frame'])
+                       virtualizables=['frame'],
+                       get_printable_location=printable_loc)
 
 class W_Root(object):
     pass
@@ -23,7 +27,13 @@ class W_IntObject(W_Root):
     def lt(self, other): 
         if not isinstance(other, W_IntObject):
             raise Exception("wrong type")
-        return W_IntObject(self.intval < other.intval)       
+        return W_IntObject(self.intval < other.intval)
+
+    def is_true(self):
+        return self.intval != 0
+
+    def str(self):
+        return str(self.intval)
 
 class W_FloatObject(W_Root):
     def __init__(self, floatval):
@@ -82,13 +92,14 @@ def execute(frame, bc):
             left = frame.pop()
             frame.push(left.lt(right))
         elif c == bytecode.JUMP_IF_FALSE:
-            if not frame.pop():
+            if not frame.pop().is_true():
                 pc = arg
         elif c == bytecode.JUMP_BACKWARD:
             pc = arg
+            driver.can_enter_jit(pc=pc, code=code, bc=bc, frame=frame)
         elif c == bytecode.PRINT:
             item = frame.pop()
-            print item
+            print item.str()
         elif c == bytecode.ASSIGN:
             frame.vars[arg] = frame.pop()
         elif c == bytecode.LOAD_VAR:

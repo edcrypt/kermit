@@ -1,6 +1,6 @@
 
 import py
-from pypy.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
+from rpython.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 from kermit import kermitdir
 from kermit import bytecode
 
