@@ -47,6 +47,15 @@ class ConstantInt(Node):
     def compile(self, ctx):
         ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(self.intval))
 
+class ConstantFloat(Node):
+    """ Represent a constant
+    """
+    def __init__(self, floatval):
+        self.floatval = floatval
+
+    def compile(self, ctx):
+        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(self.floatval))
+
 class BinOp(Node):
     """ A binary operation
     """
@@ -165,6 +174,8 @@ class Transformer(object):
             return ConstantInt(int(chnode.additional_info))
         if chnode.symbol == 'VARIABLE':
             return Variable(chnode.additional_info)
+        if chnode.symbol == 'FLOAT':
+            return ConstantFloat(float(chnode.additional_info))
         raise NotImplementedError
 
 transformer = Transformer()

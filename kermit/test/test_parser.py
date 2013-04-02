@@ -1,5 +1,5 @@
 
-from kermit.sourceparser import parse, Stmt, Block, ConstantInt, BinOp,\
+from kermit.sourceparser import parse, Stmt, Block, ConstantInt, ConstantFloat, BinOp,\
      Variable, Assignment, While, If, Print
 
 def test_parse_basic():
@@ -8,6 +8,17 @@ def test_parse_basic():
                                                 ConstantInt(2)))])
     assert parse('1 + a;') == Block([Stmt(BinOp('+', ConstantInt(1),
                                                 Variable('a')))])
+
+def test_float():
+    assert parse('1.0;') == Block([Stmt(ConstantFloat(1.0))])
+    assert parse('0.5;') == Block([Stmt(ConstantFloat(0.5))])
+    assert parse('0.0;') == Block([Stmt(ConstantFloat(0.0))])
+    assert parse('-1.0;') == Block([Stmt(ConstantFloat(-1.0))])
+    assert parse('10.0;') == Block([Stmt(ConstantFloat(10.0))])
+    assert parse('.1;') == Block([Stmt(ConstantFloat(.1))])
+    assert parse('1.0e5;') == Block([Stmt(ConstantFloat(1.0e5))])
+    assert parse('1.0E-5;') == Block([Stmt(ConstantFloat(1.0E-5))])
+    assert parse('1.0e+11;') == Block([Stmt(ConstantFloat(1.0e11))])
 
 def test_multiple_statements():
     assert parse('''
