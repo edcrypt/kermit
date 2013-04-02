@@ -1,4 +1,18 @@
 
+"""This file contains both an interpreter and "hints" in the interpreter code 
+necessary to construct a Jit.
+
+There are two required hints:
+1. JitDriver.jit_merge_point() at the start of the opcode dispatch loop
+2. JitDriver.can_enter_jit() at the end of loops (where they jump back to the start)
+
+These bounds and the "green" variables effectively mark loops and 
+allow the jit to decide if a loop is "hot" and in need of compiling.
+
+Read http://doc.pypy.org/en/latest/jit/pyjitpl5.html for details.
+
+"""
+
 from kermit.sourceparser import parse
 from kermit.bytecode import compile_ast
 from kermit import bytecode
@@ -72,6 +86,7 @@ def execute(frame, bc):
     code = bc.code
     pc = 0
     while True:
+        # required hint indicating this is the top of the opcode dispatch
         driver.jit_merge_point(pc=pc, code=code, bc=bc, frame=frame)
         c = ord(code[pc])
         arg = ord(code[pc + 1])
@@ -96,6 +111,7 @@ def execute(frame, bc):
                 pc = arg
         elif c == bytecode.JUMP_BACKWARD:
             pc = arg
+            # required hint indicating this is the end of a loop
             driver.can_enter_jit(pc=pc, code=code, bc=bc, frame=frame)
         elif c == bytecode.PRINT:
             item = frame.pop()
