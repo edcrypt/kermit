@@ -10,6 +10,16 @@ def test_print(capfd):
     out, err = capfd.readouterr()
     assert out == '1\n'
 
+def test_float_add(capfd):
+    interpret('print 1.5 + .5;')
+    out, err = capfd.readouterr()
+    assert out == '2.0\n' and not err
+
+def test_float_lt(capfd):
+    interpret('print 1.5 < .5;')
+    out, err = capfd.readouterr()
+    assert out == 'False\n' and not err
+    
 def test_while():
     interpret('n = 0; while (n < 10) { n = n + 1; }')
 
