@@ -23,6 +23,22 @@ class TestCompiler(object):
         RETURN 0
         ''')
 
+    def test_float(self):
+        self.check_compile("1.0;", '''
+        LOAD_CONSTANT 0
+        DISCARD_TOP 0
+        RETURN 0
+        ''')
+
+    def test_add_floats(self):
+        self.check_compile('1.5 + .5;', '''
+        LOAD_CONSTANT 0
+        LOAD_CONSTANT 1
+        BINARY_ADD 0
+        DISCARD_TOP 0
+        RETURN 0
+        ''')
+
     def test_print(self):
         self.check_compile('print a;', '''
         LOAD_VAR 0

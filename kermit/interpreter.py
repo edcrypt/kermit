@@ -49,12 +49,16 @@ class W_IntObject(W_Root):
     def str(self):
         return str(self.intval)
 
+
 class W_FloatObject(W_Root):
     def __init__(self, floatval):
-        self.floatval
+        self.floatval = floatval
 
-    #def add(self, other):
-    #    xxxx
+    def add(self, other):
+        if not isinstance(other, W_FloatObject):
+            raise Exception("wrong type")
+        return W_FloatObject(self.floatval + other.floatval)
+
 
 class Frame(object):
     _virtualizable2_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
