@@ -31,6 +31,7 @@ class W_Root(object):
 
 class W_IntObject(W_Root):
     def __init__(self, intval):
+        assert(isinstance(intval, int))
         self.intval = intval
 
     def add(self, other):
@@ -52,12 +53,22 @@ class W_IntObject(W_Root):
 
 class W_FloatObject(W_Root):
     def __init__(self, floatval):
+        assert(isinstance(floatval, float))
         self.floatval = floatval
 
     def add(self, other):
         if not isinstance(other, W_FloatObject):
             raise Exception("wrong type")
         return W_FloatObject(self.floatval + other.floatval)
+
+    def lt(self, other): 
+        if not isinstance(other, W_FloatObject):
+            raise Exception("wrong type")
+        return W_IntObject(self.floatval < other.floatval)
+
+    def str(self):
+        return str(self.floatval)
+
 
 
 class Frame(object):
@@ -96,7 +107,16 @@ def execute(frame, bc):
         arg = ord(code[pc + 1])
         pc += 2
         if c == bytecode.LOAD_CONSTANT:
-            frame.push(W_IntObject(bc.constants[arg]))
+            # these conversions to W_Objects should be done either once 
+            # at the start of execute() or better, as added bc.constants.
+            constant = bc.constants[arg]
+            if isinstance(constant, int):
+                w_constant = W_IntObject(constant)
+            elif isinstance(constant, float):
+                w_constant = W_FloatObject(constant)
+            else:
+                raise Exception("wrong type")
+            frame.push(w_constant)
         elif c == bytecode.DISCARD_TOP:
             frame.pop()
         elif c == bytecode.RETURN:
