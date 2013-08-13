@@ -45,7 +45,10 @@ class ConstantInt(Node):
         self.intval = intval
 
     def compile(self, ctx):
-        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(self.intval))
+        # convert the integer to W_IntObject already here
+        from kermit.interpreter import W_IntObject
+        w = W_IntObject(self.intval)
+        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(w))
 
 class ConstantFloat(Node):
     """ Represent a constant
@@ -54,7 +57,10 @@ class ConstantFloat(Node):
         self.floatval = floatval
 
     def compile(self, ctx):
-        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(self.floatval))
+        # convert the integer to W_FloatObject already here
+        from kermit.interpreter import W_FloatObject
+        w = W_FloatObject(self.floatval)
+        ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(w))
 
 class BinOp(Node):
     """ A binary operation

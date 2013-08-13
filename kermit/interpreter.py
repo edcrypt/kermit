@@ -107,15 +107,7 @@ def execute(frame, bc):
         arg = ord(code[pc + 1])
         pc += 2
         if c == bytecode.LOAD_CONSTANT:
-            # these conversions to W_Objects should be done either once 
-            # at the start of execute() or better, as added bc.constants.
-            constant = bc.constants[arg]
-            if isinstance(constant, int):
-                w_constant = W_IntObject(constant)
-            elif isinstance(constant, float):
-                w_constant = W_FloatObject(constant)
-            else:
-                raise Exception("wrong type")
+            w_constant = bc.constants[arg]
             frame.push(w_constant)
         elif c == bytecode.DISCARD_TOP:
             frame.pop()
