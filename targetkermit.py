@@ -3,8 +3,8 @@
 """
 
 import sys
-from pypy.rlib.streamio import open_file_as_stream
-from pypy.jit.codewriter.policy import JitPolicy
+from rpython.rlib.streamio import open_file_as_stream
+from rpython.jit.codewriter.policy import JitPolicy
 from kermit.interpreter import interpret
 
 def main(argv):

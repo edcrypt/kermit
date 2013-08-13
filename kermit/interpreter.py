@@ -43,7 +43,7 @@ class W_FloatObject(W_Root):
     #    xxxx
 
 class Frame(object):
-    _virtualizable2_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
+    _virtualizable_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
     
     def __init__(self, bc):
         self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
