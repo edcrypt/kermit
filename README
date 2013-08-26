@@ -21,3 +21,26 @@ If you don't have a good debugger at hand, you can walk through
 the code by using winpdb with "~/kermit$ winpdb /usr/local/bin/py.test" 
 to start and set a breakpoint at a function by typing  
 "bp kermit/test/test_parser.py:test_parse_basic" in it's console.
+
+
+Compiling kermit
+----------------
+
+To compile kermit first you need a copy of the pypy source code::
+    
+    $ hg clone https://bitbucket.org/pypy
+
+Now grab a copy of this sample::
+    
+    $ hg clone https://bitbucket.org/pypy/example-interpreter
+    
+Now run the RPython translation tool on `targetkermit.py`::
+    
+    $ cd example-interpreter
+    $ PYTHONPATH=../pypy python ../pypy/rpython/translator/goal/translate.py targetkermit.py
+    
+You're done! Now run the kermit interpreter::
+    
+    $ ./targetkermit-c
+    
+Enjoy :)
