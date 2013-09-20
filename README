@@ -37,7 +37,7 @@ Now grab a copy of this sample::
 Now run the RPython translation tool on `targetkermit.py`::
     
     $ cd example-interpreter
-    $ PYTHONPATH=../pypy python ../pypy/rpython/translator/goal/translate.py targetkermit.py
+    $ PYTHONPATH=../pypy python ../pypy/rpython/bin/rpython targetkermit.py
     
 You're done! Now run the kermit interpreter::
     
