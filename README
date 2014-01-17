@@ -3,23 +3,23 @@ Kermit - an example interpreter
 -------------------------------
 
 This is an example interpreter written using PyPy. A preferred way to walk
-through it is to follow the history of commits. Interesting tags are 
+through it is to follow the history of commits. Interesting tags are
 
 parser-boilerplate - just cruft to make parser run
 first-parse-test - enough support to make the first test of parser pass
 parser-complete - implement enough of parser to run simple ifs and whiles
 compiler-start - pass the first compiler test
 
-Generally after each change, all py.test tests should pass.  You can install 
+Generally after each change, all py.test tests should pass.  You can install
 py.test from pytest.org using "pip install -U pytest".
 
-Kermit imports from pypy so add it to your PYTHONPATH with something like 
+Kermit imports from pypy so add it to your PYTHONPATH with something like
 "export PYTHONPATH=~/pypy".
 
 
-If you don't have a good debugger at hand, you can walk through 
-the code by using winpdb with "~/kermit$ winpdb /usr/local/bin/py.test" 
-to start and set a breakpoint at a function by typing  
+If you don't have a good debugger at hand, you can walk through
+the code by using winpdb with "~/kermit$ winpdb /usr/local/bin/py.test"
+to start and set a breakpoint at a function by typing
 "bp kermit/test/test_parser.py:test_parse_basic" in it's console.
 
 
@@ -27,20 +27,20 @@ Compiling kermit
 ----------------
 
 To compile kermit first you need a copy of the pypy source code::
-    
-    $ hg clone https://bitbucket.org/pypy
+
+    $ hg clone https://bitbucket.org/pypy/pypy
 
 Now grab a copy of this sample::
-    
+
     $ hg clone https://bitbucket.org/pypy/example-interpreter
-    
+
 Now run the RPython translation tool on `targetkermit.py`::
-    
+
     $ cd example-interpreter
     $ PYTHONPATH=../pypy python ../pypy/rpython/bin/rpython targetkermit.py
-    
+
 You're done! Now run the kermit interpreter::
-    
+
     $ ./targetkermit-c
-    
+
 Enjoy :)
