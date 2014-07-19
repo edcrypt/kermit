@@ -1,5 +1,5 @@
-
-""" Execute ./kermit-c <filename>
+"""
+Usage: ./kermit <filename>
 """
 
 import sys

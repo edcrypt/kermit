@@ -1,4 +1,3 @@
-
 Kermit - an example interpreter
 -------------------------------
 
@@ -26,21 +25,27 @@ to start and set a breakpoint at a function by typing
 Compiling kermit
 ----------------
 
+First we assume a convention of ``$HOME/work`` to store source code::
+
+    $ mkdir -p $HOME/work
+    $ cd $HOME/work
+
 To compile kermit first you need a copy of the pypy source code::
 
-    $ hg clone https://bitbucket.org/pypy/pypy
+    $ hg clone https://bitbucket.org/prologic/pypy
 
 Now grab a copy of this sample::
 
-    $ hg clone https://bitbucket.org/pypy/example-interpreter
+    $ hg clone https://bitbucket.org/prologic/kermit
 
-Now run the RPython translation tool on `targetkermit.py`::
+Now bootstrap, build and compile the kernmit interpreter::
 
-    $ cd example-interpreter
-    $ PYTHONPATH=../pypy python ../pypy/rpython/bin/rpython targetkermit.py
+    $ cd kermit
+    $ ./bootstrap.sh
+    $ fab build compile
 
 You're done! Now run the kermit interpreter::
 
-    $ ./targetkermit-c
+    $ ./build/kermit samples/hello.ker
 
 Enjoy :)

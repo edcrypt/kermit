@@ -1,5 +1,9 @@
 syntax: glob
 
 *~
+dist
+build
 *.py[co]
-targetkermit-c
+coverage
+.coverage*
+*.egg-info
