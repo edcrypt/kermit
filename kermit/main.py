@@ -15,6 +15,7 @@ VERSION = "kermit v" + kermit.__version__
 
 
 class Options(object):
+
     """Options Object Container"""
 
 

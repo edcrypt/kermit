@@ -7,7 +7,9 @@ for i, bytecode in enumerate(bytecodes):
 
 BINOP = {'+': BINARY_ADD, '-': BINARY_SUB, '==': BINARY_EQ, '<': BINARY_LT}
 
+
 class CompilerContext(object):
+
     def __init__(self):
         self.data = []
         self.constants = []
@@ -33,9 +35,10 @@ class CompilerContext(object):
     def create_bytecode(self):
         return ByteCode("".join(self.data), self.constants[:], len(self.names))
 
+
 class ByteCode(object):
     _immutable_fields_ = ['code', 'constants[*]', 'numvars']
-    
+
     def __init__(self, code, constants, numvars):
         self.code = code
         self.constants = constants
@@ -49,6 +52,7 @@ class ByteCode(object):
             c2 = self.code[i + 1]
             lines.append(bytecodes[ord(c)] + " " + str(ord(c2)))
         return '\n'.join(lines)
+
 
 def compile_ast(astnode):
     c = CompilerContext()

@@ -1,12 +1,12 @@
 
-"""This file contains both an interpreter and "hints" in the interpreter code 
+"""This file contains both an interpreter and "hints" in the interpreter code
 necessary to construct a Jit.
 
 There are two required hints:
 1. JitDriver.jit_merge_point() at the start of the opcode dispatch loop
 2. JitDriver.can_enter_jit() at the end of loops (where they jump back to the start)
 
-These bounds and the "green" variables effectively mark loops and 
+These bounds and the "green" variables effectively mark loops and
 allow the jit to decide if a loop is "hot" and in need of compiling.
 
 Read http://doc.pypy.org/en/latest/jit/pyjitpl5.html for details.
@@ -18,18 +18,22 @@ from kermit.bytecode import compile_ast
 from kermit import bytecode
 from rpython.rlib import jit
 
+
 def printable_loc(pc, code, bc):
     return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
-driver = jit.JitDriver(greens = ['pc', 'code', 'bc'],
-                       reds = ['frame'],
+driver = jit.JitDriver(greens=['pc', 'code', 'bc'],
+                       reds=['frame'],
                        virtualizables=['frame'],
                        get_printable_location=printable_loc)
+
 
 class W_Root(object):
     pass
 
+
 class W_IntObject(W_Root):
+
     def __init__(self, intval):
         assert(isinstance(intval, int))
         self.intval = intval
@@ -39,7 +43,7 @@ class W_IntObject(W_Root):
             raise Exception("wrong type")
         return W_IntObject(self.intval + other.intval)
 
-    def lt(self, other): 
+    def lt(self, other):
         if not isinstance(other, W_IntObject):
             raise Exception("wrong type")
         return W_IntObject(self.intval < other.intval)
@@ -52,6 +56,7 @@ class W_IntObject(W_Root):
 
 
 class W_FloatObject(W_Root):
+
     def __init__(self, floatval):
         assert(isinstance(floatval, float))
         self.floatval = floatval
@@ -61,7 +66,7 @@ class W_FloatObject(W_Root):
             raise Exception("wrong type")
         return W_FloatObject(self.floatval + other.floatval)
 
-    def lt(self, other): 
+    def lt(self, other):
         if not isinstance(other, W_FloatObject):
             raise Exception("wrong type")
         return W_IntObject(self.floatval < other.floatval)
@@ -70,13 +75,12 @@ class W_FloatObject(W_Root):
         return str(self.floatval)
 
 
-
 class Frame(object):
     _virtualizable_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
-    
+
     def __init__(self, bc):
         self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
-        self.valuestack = [None] * 3 # safe estimate!
+        self.valuestack = [None] * 3  # safe estimate!
         self.vars = [None] * bc.numvars
         self.valuestack_pos = 0
 
@@ -85,7 +89,7 @@ class Frame(object):
         assert pos >= 0
         self.valuestack[pos] = v
         self.valuestack_pos = pos + 1
-    
+
     def pop(self):
         pos = jit.hint(self.valuestack_pos, promote=True)
         new_pos = pos - 1
@@ -94,8 +98,10 @@ class Frame(object):
         self.valuestack_pos = new_pos
         return v
 
+
 def add(left, right):
     return left + right
+
 
 def execute(frame, bc):
     code = bc.code
@@ -139,8 +145,9 @@ def execute(frame, bc):
         else:
             assert False
 
+
 def interpret(source):
     bc = compile_ast(parse(source))
     frame = Frame(bc)
     execute(frame, bc)
-    return frame # for tests and later introspection
+    return frame  # for tests and later introspection

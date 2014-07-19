@@ -9,7 +9,7 @@ from subprocess import Popen, STDOUT
 def importable(module):
     try:
         m = __import__(module, globals(), locals())
-        return type(m) is ModuleType
+        return isinstance(m, ModuleType)
     except ImportError:
         return False
 

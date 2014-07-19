@@ -8,9 +8,12 @@ grammar = py.path.local(kermitdir).join('grammar.txt').read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
 _parse = make_parse_function(regexs, rules, eof=True)
 
+
 class Node(object):
+
     """ The abstract AST node
     """
+
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and
                 self.__dict__ == other.__dict__)
@@ -18,9 +21,12 @@ class Node(object):
     def __ne__(self, other):
         return not self == other
 
+
 class Block(Node):
+
     """ A list of statements
     """
+
     def __init__(self, stmts):
         self.stmts = stmts
 
@@ -28,9 +34,12 @@ class Block(Node):
         for stmt in self.stmts:
             stmt.compile(ctx)
 
+
 class Stmt(Node):
+
     """ A single statement
     """
+
     def __init__(self, expr):
         self.expr = expr
 
@@ -38,9 +47,12 @@ class Stmt(Node):
         self.expr.compile(ctx)
         ctx.emit(bytecode.DISCARD_TOP)
 
+
 class ConstantInt(Node):
+
     """ Represent a constant
     """
+
     def __init__(self, intval):
         self.intval = intval
 
@@ -50,9 +62,12 @@ class ConstantInt(Node):
         w = W_IntObject(self.intval)
         ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(w))
 
+
 class ConstantFloat(Node):
+
     """ Represent a constant
     """
+
     def __init__(self, floatval):
         self.floatval = floatval
 
@@ -62,9 +77,12 @@ class ConstantFloat(Node):
         w = W_FloatObject(self.floatval)
         ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(w))
 
+
 class BinOp(Node):
+
     """ A binary operation
     """
+
     def __init__(self, op, left, right):
         self.op = op
         self.left = left
@@ -75,18 +93,24 @@ class BinOp(Node):
         self.right.compile(ctx)
         ctx.emit(bytecode.BINOP[self.op])
 
+
 class Variable(Node):
+
     """ Variable reference
     """
+
     def __init__(self, varname):
         self.varname = varname
 
     def compile(self, ctx):
         ctx.emit(bytecode.LOAD_VAR, ctx.register_var(self.varname))
 
+
 class Assignment(Node):
+
     """ Assign to a variable
     """
+
     def __init__(self, varname, expr):
         self.varname = varname
         self.expr = expr
@@ -95,9 +119,12 @@ class Assignment(Node):
         self.expr.compile(ctx)
         ctx.emit(bytecode.ASSIGN, ctx.register_var(self.varname))
 
+
 class While(Node):
+
     """ Simple loop
     """
+
     def __init__(self, cond, body):
         self.cond = cond
         self.body = body
@@ -111,9 +138,12 @@ class While(Node):
         ctx.emit(bytecode.JUMP_BACKWARD, pos)
         ctx.data[jmp_pos] = chr(len(ctx.data))
 
+
 class If(Node):
+
     """ A very simple if
     """
+
     def __init__(self, cond, body):
         self.cond = cond
         self.body = body
@@ -125,7 +155,9 @@ class If(Node):
         self.body.compile(ctx)
         ctx.data[jmp_pos] = chr(len(ctx.data))
 
+
 class Print(Node):
+
     def __init__(self, expr):
         self.expr = expr
 
@@ -133,10 +165,13 @@ class Print(Node):
         self.expr.compile(ctx)
         ctx.emit(bytecode.PRINT, 0)
 
+
 class Transformer(object):
+
     """ Transforms AST from the obscure format given to us by the ennfparser
     to something easier to work with
     """
+
     def _grab_stmts(self, star):
         stmts = []
         while len(star.children) == 2:
@@ -144,7 +179,7 @@ class Transformer(object):
             star = star.children[1]
         stmts.append(self.visit_stmt(star.children[0]))
         return stmts
-    
+
     def visit_main(self, node):
         stmts = self._grab_stmts(node.children[0])
         return Block(stmts)
@@ -185,6 +220,7 @@ class Transformer(object):
         raise NotImplementedError
 
 transformer = Transformer()
+
 
 def parse(source):
     """ Parse the source code and produce an AST
