@@ -28,6 +28,17 @@ def test_float():
 
 def test_string():
     assert parse('"foo";') == Block([Stmt(ConstantString("foo"))])
+    assert parse('"foo" + "bar";') == Block(
+        [
+            Stmt(
+                BinOp(
+                    "+",
+                    ConstantString("foo"),
+                    ConstantString("bar")
+                )
+            )
+        ]
+    )
 
 
 def test_multiple_statements():

@@ -1,3 +1,4 @@
 x = 1;
 print x;
+print "foo" + "bar";
 print "Hello World!";
