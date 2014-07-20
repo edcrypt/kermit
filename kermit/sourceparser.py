@@ -1,8 +1,13 @@
 
 import py
+
 from rpython.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
+
+
 from kermit import kermitdir
 from kermit import bytecode
+from kermit.utils import string_unquote
+
 
 grammar = py.path.local(kermitdir).join('grammar.txt').read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
@@ -76,6 +81,21 @@ class ConstantFloat(Node):
         from kermit.interpreter import W_FloatObject
         w = W_FloatObject(self.floatval)
         ctx.emit(bytecode.LOAD_CONSTANT, ctx.register_constant(w))
+
+
+class ConstantString(Node):
+    """Represent a constant String"""
+
+    def __init__(self, stringval):
+        self.stringval = stringval
+
+    def compile(self, ctx):
+        # convert the integer to W_StringObject already here
+        from kermit.interpreter import W_StringObject
+        w = W_StringObject(self.stringval)
+        ctx.emit(
+            bytecode.LOAD_STRING, ctx.register_string(w)
+        )
 
 
 class BinOp(Node):
@@ -217,6 +237,10 @@ class Transformer(object):
             return Variable(chnode.additional_info)
         if chnode.symbol == 'FLOAT':
             return ConstantFloat(float(chnode.additional_info))
+        if chnode.symbol == 'STRING':
+            return ConstantString(
+                str(string_unquote(chnode.additional_info))
+            )
         raise NotImplementedError
 
 transformer = Transformer()

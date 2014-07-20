@@ -1,6 +1,9 @@
 
-from kermit.sourceparser import parse, Stmt, Block, ConstantInt, ConstantFloat, BinOp,\
-    Variable, Assignment, While, If, Print
+from kermit.sourceparser import parse
+from kermit.sourceparser import (
+    Stmt, Block, ConstantInt, ConstantFloat,
+    ConstantString, BinOp, Variable, Assignment, While, If, Print
+)
 
 
 def test_parse_basic():
@@ -21,6 +24,10 @@ def test_float():
     assert parse('1.0e5;') == Block([Stmt(ConstantFloat(1.0e5))])
     assert parse('1.0E-5;') == Block([Stmt(ConstantFloat(1.0E-5))])
     assert parse('1.0e+11;') == Block([Stmt(ConstantFloat(1.0e11))])
+
+
+def test_string():
+    assert parse('"foo";') == Block([Stmt(ConstantString("foo"))])
 
 
 def test_multiple_statements():

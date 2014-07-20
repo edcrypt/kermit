@@ -4,7 +4,8 @@ necessary to construct a Jit.
 
 There are two required hints:
 1. JitDriver.jit_merge_point() at the start of the opcode dispatch loop
-2. JitDriver.can_enter_jit() at the end of loops (where they jump back to the start)
+2. JitDriver.can_enter_jit() at the end of loops
+   (where they jump back to the start)
 
 These bounds and the "green" variables effectively mark loops and
 allow the jit to decide if a loop is "hot" and in need of compiling.
@@ -75,6 +76,26 @@ class W_FloatObject(W_Root):
         return str(self.floatval)
 
 
+class W_StringObject(W_Root):
+
+    def __init__(self, stringval):
+        assert(isinstance(stringval, str))
+        self.stringval = stringval
+
+    def add(self, other):
+        if not isinstance(other, W_StringObject):
+            raise Exception("wrong type")
+        return W_StringObject(self.stringval + other.stringval)
+
+    def lt(self, other):
+        if not isinstance(other, W_StringObject):
+            raise Exception("wrong type")
+        return W_IntObject(self.stringval < other.stringval)
+
+    def str(self):
+        return str(self.stringval)
+
+
 class Frame(object):
     _virtualizable_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
 
@@ -103,7 +124,7 @@ def add(left, right):
     return left + right
 
 
-def execute(frame, bc):
+def execute(frame, bc):  # noqa
     code = bc.code
     pc = 0
     while True:
@@ -114,6 +135,9 @@ def execute(frame, bc):
         pc += 2
         if c == bytecode.LOAD_CONSTANT:
             w_constant = bc.constants[arg]
+            frame.push(w_constant)
+        elif c == bytecode.LOAD_STRING:
+            w_constant = bc.strconstants[arg]
             frame.push(w_constant)
         elif c == bytecode.DISCARD_TOP:
             frame.pop()

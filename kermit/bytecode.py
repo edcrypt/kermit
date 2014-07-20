@@ -1,11 +1,22 @@
 
-bytecodes = ['LOAD_CONSTANT', 'LOAD_VAR', 'ASSIGN', 'DISCARD_TOP',
-             'JUMP_IF_FALSE', 'JUMP_BACKWARD', 'BINARY_ADD', 'BINARY_SUB',
-             'BINARY_EQ', 'RETURN', 'PRINT', 'BINARY_LT']
+bytecodes = [
+    'LOAD_CONSTANT', 'LOAD_STRING', 'LOAD_VAR',
+    'ASSIGN', 'DISCARD_TOP', 'JUMP_IF_FALSE', 'JUMP_BACKWARD',
+    'BINARY_ADD', 'BINARY_SUB', 'BINARY_EQ', 'RETURN', 'PRINT',
+    'BINARY_LT'
+]
+
+
 for i, bytecode in enumerate(bytecodes):
     globals()[bytecode] = i
 
-BINOP = {'+': BINARY_ADD, '-': BINARY_SUB, '==': BINARY_EQ, '<': BINARY_LT}
+
+BINOP = {
+    '+': globals()["BINARY_ADD"],
+    '-': globals()["BINARY_SUB"],
+    '==': globals()["BINARY_EQ"],
+    '<': globals()["BINARY_LT"]
+}
 
 
 class CompilerContext(object):
@@ -13,12 +24,17 @@ class CompilerContext(object):
     def __init__(self):
         self.data = []
         self.constants = []
+        self.strconstants = []
         self.names = []
         self.names_to_numbers = {}
 
     def register_constant(self, v):
         self.constants.append(v)
         return len(self.constants) - 1
+
+    def register_string(self, v):
+        self.strconstants.append(v)
+        return len(self.strconstants) - 1
 
     def register_var(self, name):
         try:
@@ -33,15 +49,21 @@ class CompilerContext(object):
         self.data.append(chr(arg))
 
     def create_bytecode(self):
-        return ByteCode("".join(self.data), self.constants[:], len(self.names))
+        return ByteCode(
+            "".join(self.data),
+            self.constants[:],
+            self.strconstants[:],
+            len(self.names)
+        )
 
 
 class ByteCode(object):
-    _immutable_fields_ = ['code', 'constants[*]', 'numvars']
+    _immutable_fields_ = ['code', 'constants[*]', 'strconstants[*]', 'numvars']
 
-    def __init__(self, code, constants, numvars):
+    def __init__(self, code, constants, strconstants, numvars):
         self.code = code
         self.constants = constants
+        self.strconstants = strconstants
         self.numvars = numvars
 
     def dump(self):
@@ -57,5 +79,5 @@ class ByteCode(object):
 def compile_ast(astnode):
     c = CompilerContext()
     astnode.compile(c)
-    c.emit(RETURN, 0)
+    c.emit(RETURN, 0)  # noqa
     return c.create_bytecode()
