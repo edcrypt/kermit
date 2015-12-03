@@ -20,7 +20,14 @@ from kermit import bytecode
 from rpython.rlib import jit
 
 
-def printable_loc(pc, code, bc):
+def printable_loc(pc, code, *_):
+    """REturn a printable source location for JIT Debugging
+
+    :param _: bc (unused)
+
+    .. note:: All green parameters are passed in-order.
+    """
+
     return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
 driver = jit.JitDriver(greens=['pc', 'code', 'bc'],

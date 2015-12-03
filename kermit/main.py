@@ -61,19 +61,20 @@ def parse_args(argv):
 
 def main(argv):
     try:
-        opts, files = parse_args(argv)
+        _, args = parse_args(argv)
 
-        return run(files, opts)
+        filename = args[0]
+
+        return run(filename)
     except SystemExit:
         return 0
 
 
-def run(files, opts):
-    for file in files:
-        f = open_file_as_stream(file)
-        data = f.readall()
-        f.close()
-        interpret(data)
+def run(filename):
+    f = open_file_as_stream(filename)
+    source = f.readall()
+    f.close()
+    interpret(source)
 
     return 0
 
@@ -82,9 +83,20 @@ def entrypoint():
     return main(sys.argv)
 
 
-def target(driver, args):
+def target(*dummy):
+    """RPython Translation entrypoint
+
+    :param driver: An instnace of a JITDriver
+    :param args: argv
+    """
+
     return main, None
 
 
-def jitpolicy(driver):
+def jitpolicy(*dummy):
+    """JIT Policy
+
+    :param driver: An instance of a JITDriver
+    """
+
     return JitPolicy()
