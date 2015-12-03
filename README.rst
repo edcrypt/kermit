@@ -1,51 +1,116 @@
-Kermit - an example interpreter
--------------------------------
+.. _Python: https://www.python.org/
+.. _virtualenv: https://pypy.python.org/pypi/virtualenv
+.. _virtualenvwrapper: https://pypy.python.org/pypi/virtualenvwrapper
+.. _Docker: https://docker.com/
+.. _Latest Release: https://github.com/prologic/kermit/releases
+.. _example interpreter: https://bitbucket.org/pypy/example-interpreter
+
+Kermit - An example interpreter
+===============================
+
+.. image:: https://travis-ci.org/prologic/kermit.svg
+   :target: https://travis-ci.org/prologic/kermit
+   :alt: Build Status
+
+.. image:: https://coveralls.io/repos/prologic/kermit/badge.svg
+   :target: https://coveralls.io/r/prologic/kermit
+   :alt: Coverage
+
+.. image:: https://landscape.io/github/prologic/kermit/master/landscape.png
+   :target: https://landscape.io/github/prologic/kermit/master
+   :alt: Quality
 
 This is an example interpreter written using PyPy. A preferred way to walk
 through it is to follow the history of commits. Interesting tags are
 
-parser-boilerplate - just cruft to make parser run
-first-parse-test - enough support to make the first test of parser pass
-parser-complete - implement enough of parser to run simple ifs and whiles
-compiler-start - pass the first compiler test
-
-Generally after each change, all py.test tests should pass.  You can install
-py.test from pytest.org using "pip install -U pytest".
-
-Kermit imports from pypy so add it to your PYTHONPATH with something like
-"export PYTHONPATH=~/pypy".
+- parser-boilerplate    -- just cruft to make parser run
+- first-parse-test      -- enough support to make the first test of parser pass
+- parser-complete       -- implement enough of parser to run simple ifs and whiles
+- compiler-start        -- pass the first compiler test
 
 
-If you don't have a good debugger at hand, you can walk through
-the code by using winpdb with "~/kermit$ winpdb /usr/local/bin/py.test"
-to start and set a breakpoint at a function by typing
-"bp kermit/test/test_parser.py:test_parse_basic" in it's console.
+.. note:: This is a fork of PyPy's `example interpreter`_ Kermit.
+          You may still follow the commit history as a learning
+          guide, however; this fork is a divergent from PyPy's
+          version of Kermit and is not compatible.
 
 
-Compiling kermit
-----------------
+Prerequisites
+-------------
 
-First we assume a convention of ``$HOME/work`` to store source code::
+It is recommended that you do all development using a Python Virtual
+Environment using `virtualenv`_ and/or using the nice `virtualenvwrapper`_.
 
-    $ mkdir -p $HOME/work
-    $ cd $HOME/work
+::
+   
+    $ mkvirtualenv kermit
 
-To compile kermit first you need a copy of the pypy source code::
 
-    $ hg clone https://bitbucket.org/prologic/pypy
+Installation
+------------
 
-Now grab a copy of this sample::
+Grab the source from https://github.com/prologic/kermit and either
+run ``python setup.py develop`` or ``pip install -e .``
 
-    $ hg clone https://bitbucket.org/prologic/kermit
-
-Now bootstrap, build and compile the kernmit interpreter::
-
+::
+    
+    $ git clone https://github.com/prologic/kermit.git
     $ cd kermit
-    $ ./bootstrap.sh
-    $ fab build compile
+    $ pip install -e .
 
-You're done! Now run the kermit interpreter::
+You can also download the `Latest Release`_
 
-    $ ./build/kermit samples/hello.ker
 
-Enjoy :)
+Building
+--------
+
+To build the interpreter simply run ``kermit/main.py`` against the RPython
+Compiler. There is a ``Makefile`` that has a default target for building
+and translating the interpreter.
+
+::
+    
+    $ make
+
+You can also use `Docker`_ to build the interpreter:
+
+::
+    
+    $ docker build -t kermit .
+
+
+Usage
+-----
+
+You can either run the interpreter using `Python`_ itself or by running the
+compiled interpreter ``kermit`` in ``./bin/kermit``.
+
+::
+    
+    $ ./bin/kermit examples/hello.ker
+
+Untranslated running on top of `Python`_ (*CPython*):
+
+::
+    
+    $ kermit examples/hello.ker
+
+
+Grammar
+-------
+
+The grammar of kermit is currently as follows:
+
+::
+   
+   main: statement* [EOF];
+
+   statement: expr ";"
+              | VARIABLE "=" expr ";"
+              | "while" "(" expr ")" "{" statement* "}"
+              | "if" "(" expr ")" "{" statement* "}"
+              | "print" expr ";";
+
+   expr: atom ADD_SYMBOL expr | atom;
+
+   atom: DECIMAL | FLOAT | STRING | VARIABLE;
