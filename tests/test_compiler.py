@@ -1,12 +1,12 @@
 
-from kermit.sourceparser import parse
-from kermit.bytecode import compile_ast
+from kermit.parser import parse
+from kermit.compiler import compile
 
 
 class TestCompiler(object):
 
     def check_compile(self, source, expected):
-        bc = compile_ast(parse(source))
+        bc = compile(parse(source))
         assert [i.strip() for i in expected.splitlines()
                 if i.strip()] == bc.dump().splitlines()
 

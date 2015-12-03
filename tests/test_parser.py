@@ -1,9 +1,9 @@
-
-from kermit.sourceparser import parse
-from kermit.sourceparser import (
+from kermit.ast import (
     Stmt, Block, ConstantInt, ConstantFloat,
     ConstantString, BinOp, Variable, Assignment, While, If, Print
 )
+
+from kermit.parser import parse
 
 
 def test_parse_basic():

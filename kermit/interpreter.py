@@ -14,14 +14,17 @@ Read http://doc.pypy.org/en/latest/jit/pyjitpl5.html for details.
 
 """
 
-from kermit.sourceparser import parse
-from kermit.bytecode import compile_ast
-from kermit import bytecode
+
 from rpython.rlib import jit
 
 
+from kermit import bytecode
+from kermit.parser import parse
+from kermit.compiler import compile
+
+
 def printable_loc(pc, code, *_):
-    """REturn a printable source location for JIT Debugging
+    """Return a printable source location for JIT Debugging
 
     :param _: bc (unused)
 
@@ -30,77 +33,13 @@ def printable_loc(pc, code, *_):
 
     return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
-driver = jit.JitDriver(greens=['pc', 'code', 'bc'],
-                       reds=['frame'],
-                       virtualizables=['frame'],
-                       get_printable_location=printable_loc)
 
-
-class W_Root(object):
-    pass
-
-
-class W_IntObject(W_Root):
-
-    def __init__(self, intval):
-        assert(isinstance(intval, int))
-        self.intval = intval
-
-    def add(self, other):
-        if not isinstance(other, W_IntObject):
-            raise Exception("wrong type")
-        return W_IntObject(self.intval + other.intval)
-
-    def lt(self, other):
-        if not isinstance(other, W_IntObject):
-            raise Exception("wrong type")
-        return W_IntObject(self.intval < other.intval)
-
-    def is_true(self):
-        return self.intval != 0
-
-    def str(self):
-        return str(self.intval)
-
-
-class W_FloatObject(W_Root):
-
-    def __init__(self, floatval):
-        assert(isinstance(floatval, float))
-        self.floatval = floatval
-
-    def add(self, other):
-        if not isinstance(other, W_FloatObject):
-            raise Exception("wrong type")
-        return W_FloatObject(self.floatval + other.floatval)
-
-    def lt(self, other):
-        if not isinstance(other, W_FloatObject):
-            raise Exception("wrong type")
-        return W_IntObject(self.floatval < other.floatval)
-
-    def str(self):
-        return str(self.floatval)
-
-
-class W_StringObject(W_Root):
-
-    def __init__(self, stringval):
-        assert(isinstance(stringval, str))
-        self.stringval = stringval
-
-    def add(self, other):
-        if not isinstance(other, W_StringObject):
-            raise Exception("wrong type")
-        return W_StringObject(self.stringval + other.stringval)
-
-    def lt(self, other):
-        if not isinstance(other, W_StringObject):
-            raise Exception("wrong type")
-        return W_IntObject(self.stringval < other.stringval)
-
-    def str(self):
-        return str(self.stringval)
+driver = jit.JitDriver(
+   greens=['pc', 'code', 'bc'],
+   reds=['frame'],
+   virtualizables=['frame'],
+   get_printable_location=printable_loc
+)
 
 
 class Frame(object):
@@ -178,7 +117,7 @@ def execute(frame, bc):  # noqa
 
 
 def interpret(source):
-    bc = compile_ast(parse(source))
+    bc = compile(parse(source))
     frame = Frame(bc)
     execute(frame, bc)
     return frame  # for tests and later introspection
