@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+"""Main"""
+
 
 import sys
 
 
+from rpython.jit.codewriter.policy import JitPolicy
 from rpython.rlib.streamio import open_file_as_stream
 
 
@@ -15,7 +17,6 @@ VERSION = "kermit v" + kermit.__version__
 
 
 class Options(object):
-
     """Options Object Container"""
 
 
@@ -78,10 +79,12 @@ def run(files, opts):
 
 
 def entrypoint():
-    """setuptools Entry Point"""
-
     return main(sys.argv)
 
 
-if __name__ == "__main__":  # pragma: no cover
-    entrypoint()
+def target(driver, args):
+    return main, None
+
+
+def jitpolicy(driver):
+    return JitPolicy()

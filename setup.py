@@ -1,85 +1,56 @@
 #!/usr/bin/env python
 
-from glob import glob
-from imp import new_module
-from os import getcwd, path
-
 
 from setuptools import setup, find_packages
 
 
-version = new_module("version")
-
-exec(
-    compile(
-        open(
-            path.join(
-                path.dirname(
-                    globals().get(
-                        "__file__",
-                        path.join(getcwd(), "kermit")
-                    )
-                ),
-                "kermit/version.py"
-            ),
-            "r"
-        ).read(),
-        "kermit/version.py",
-        "exec"
-    ),
-    version.__dict__
-)
+def parse_requirements(filename):
+    with open(filename, "r") as f:
+        for line in f:
+            if line and line[:2] not in ("#", "-e"):
+                yield line.strip()
 
 
 setup(
-    name="keermit",
-    version=version.version,
-    description="TBA",
-    long_description="{0:s}\n\n{1:s}".format(
-        open("README.rst").read(), open("CHANGES.rst").read()
-    ),
-    author="TBA",
-    author_email="TBA",
-    url="TBA",
-    download_url="TBA",
+    name="kermit",
+    description="Fork of the PyPy example interpreter",
+    long_description=open("README.rst", "r").read(),
+    author="James Mills",
+    author_email="James Mills, prologic at shortcircuit dot net dot au",
+    url="https://bitbucket.org/prologic/kermit",
+    download_url="https://bitbucket.org/prologic/kermit/downloads",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 1 - Alpha",
+        "Environment :: No Input/Output (Daemon)",
         "Intended Audience :: Developers",
+        "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: POSIX :: Linux",
-        "Programming Language :: Python :: 2.7",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
         "Topic :: Software Development :: Assemblers",
         "Topic :: Software Development :: Code Generators",
         "Topic :: Software Development :: Compilers",
         "Topic :: Software Development :: Debuggers",
         "Topic :: Software Development :: Interpreters",
     ],
-    license="TBA",
-    keywords="TBA",
+    license="MIT",
+    keywords="pypy rpython example interpreter kermit",
     platforms="POSIX",
     packages=find_packages("."),
-    # package_data={
-    #     "kermit": [
-    #         "lib/*.kermit",
-    #     ]
-    # },
-    # include_package_data=True,
-    scripts=glob("bin/*"),
-    install_requires=[
-    ],
-    setup_requires=[
-        "fabric",
-        "pytest",
-        "pypy",
-        "rpython",
-    ],
+    include_package_data=True,
+    install_requires=list(parse_requirements("requirements.txt")),
     entry_points={
         "console_scripts": [
             "kermit=kermit.main:entrypoint",
         ]
     },
     test_suite="tests.main.main",
-    zip_safe=False
+    zip_safe=False,
+    use_scm_version={
+        "write_to": "kermit/version.py",
+    },
+    setup_requires=[
+        "setuptools_scm"
+    ],
 )

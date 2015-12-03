@@ -1,0 +1,4 @@
+pytest
+rpython
+coveralls
+pytest-cov
