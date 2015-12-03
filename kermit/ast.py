@@ -166,6 +166,13 @@ class If(Node):
         ctx.data[jmp_pos] = chr(len(ctx.data))
 
 
+class Function(Node):
+
+    def __init__(self, name, body):
+        self.name = name
+        self.body = body
+
+
 class Print(Node):
 
     def __init__(self, expr):

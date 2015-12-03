@@ -1,5 +1,5 @@
 from kermit.ast import (
-    Stmt, Block, ConstantInt, ConstantFloat,
+    Stmt, Block, ConstantInt, ConstantFloat, Function,
     ConstantString, BinOp, Variable, Assignment, While, If, Print
 )
 
@@ -63,6 +63,14 @@ def test_while():
 def test_if():
     assert parse("if (1) { a; }") == Block([If(ConstantInt(1),
                                                Block([Stmt(Variable("a"))]))])
+
+
+def test_func_decl():
+    assert parse("func foo() { print 1; }") == Block([
+        Function("foo", Block([
+            Print(ConstantInt(1))
+        ]))
+    ])
 
 
 def test_print():

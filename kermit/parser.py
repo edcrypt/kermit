@@ -9,7 +9,7 @@ from rpython.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 from kermit import kermitdir
 
 from kermit.ast import (
-    Stmt, Block, ConstantInt, ConstantFloat,
+    Stmt, Block, ConstantInt, ConstantFloat, Function,
     ConstantString, BinOp, Variable, Assignment, While, If, Print
 )
 
@@ -53,6 +53,10 @@ class Transformer(object):
             cond = self.visit_expr(node.children[2])
             stmts = self._grab_stmts(node.children[5])
             return If(cond, Block(stmts))
+        if node.children[0].additional_info == 'func':
+            name = node.children[1].additional_info
+            body = self._grab_stmts(node.children[5])
+            return Function(name, Block(body))
         if node.children[0].additional_info == 'print':
             return Print(self.visit_expr(node.children[1]))
         raise NotImplementedError
