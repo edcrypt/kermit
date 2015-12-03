@@ -2,7 +2,7 @@
 .. _virtualenv: https://pypy.python.org/pypi/virtualenv
 .. _virtualenvwrapper: https://pypy.python.org/pypi/virtualenvwrapper
 .. _Docker: https://docker.com/
-.. _Latest Release: https://github.com/prologic/kermit/releases
+.. _Latest Releases: https://github.com/prologic/kermit/releases
 .. _example interpreter: https://bitbucket.org/pypy/example-interpreter
 
 Kermit - An example interpreter
@@ -23,11 +23,18 @@ Kermit - An example interpreter
 This is an example interpreter written using PyPy. A preferred way to walk
 through it is to follow the history of commits. Interesting tags are
 
-- parser-boilerplate    -- just cruft to make parser run
-- first-parse-test      -- enough support to make the first test of parser pass
-- parser-complete       -- implement enough of parser to run simple ifs and whiles
-- compiler-start        -- pass the first compiler test
+- `Parser boilerplate <https://github.com/prologic/kermit/releases/tag/0.0.1>`_
+- `First parser test <https://github.com/prologic/kermit/releases/tag/0.0.2>`_
+- `Parser complete <https://github.com/prologic/kermit/releases/tag/0.0.3>`_
+- `Compiler start <https://github.com/prologic/kermit/releases/tag/0.0.4>`_
+- `Interpreter start <https://github.com/prologic/kermit/releases/tag/0.0.5>`_
+- `Print support <https://github.com/prologic/kermit/releases/tag/0.0.6>`_
+- `While loops <https://github.com/prologic/kermit/releases/tag/0.0.7>`_
+- ...
+- `CLI options <https://github.com/prologic/kermit/releases/tag/0.0.11>`_
+- `Hello World! <https://github.com/prologic/kermit/releases/tag/0.0.12>`_
 
+For a full list of interesting tags/releases see: `Latest Releases`_
 
 .. note:: This is a fork of PyPy's `example interpreter`_ Kermit.
           You may still follow the commit history as a learning
@@ -57,8 +64,6 @@ run ``python setup.py develop`` or ``pip install -e .``
     $ git clone https://github.com/prologic/kermit.git
     $ cd kermit
     $ pip install -e .
-
-You can also download the `Latest Release`_
 
 
 Building
