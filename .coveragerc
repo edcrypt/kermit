@@ -1,0 +1,11 @@
+[run]
+omit = kermit/main.py
+       kermit/__init__.py
+       kermit/version.py
+       tests/*
+
+[html]
+directory = coverage
+
+[xml]
+output = coverage.xml
