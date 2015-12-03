@@ -42,7 +42,7 @@ class CompilerContext(object):
         )
 
 
-def compile(astnode):
+def compile_ast(astnode):
     c = CompilerContext()
     astnode.compile(c)
     c.emit(RETURN, 0)  # noqa

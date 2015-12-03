@@ -20,7 +20,7 @@ from rpython.rlib import jit
 
 from kermit import bytecode
 from kermit.parser import parse
-from kermit.compiler import compile
+from kermit.compiler import compile_ast
 
 
 def printable_loc(pc, code, *_):
@@ -117,7 +117,7 @@ def execute(frame, bc):  # noqa
 
 
 def interpret(source):
-    bc = compile(parse(source))
+    bc = compile_ast(parse(source))
     frame = Frame(bc)
     execute(frame, bc)
     return frame  # for tests and later introspection
