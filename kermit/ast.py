@@ -172,6 +172,12 @@ class Function(Node):
         self.name = name
         self.body = body
 
+    def compile(self, ctx):
+        from kermit.compiler import compile_ast
+        from kermit.objects import W_FunctionObject
+        w = W_FunctionObject(self.name, compile_ast(self.body))
+        ctx.emit(bytecode.LOAD_FUNC, ctx.register_func(w))
+
 
 class Print(Node):
 

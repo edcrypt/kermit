@@ -10,6 +10,7 @@ class CompilerContext(object):
         self.data = []
         self.constants = []
         self.strconstants = []
+        self.functions = []
         self.names = []
         self.names_to_numbers = {}
 
@@ -29,6 +30,10 @@ class CompilerContext(object):
             self.names.append(name)
             return len(self.names) - 1
 
+    def register_func(self, f):
+        self.functions.append(f)
+        return len(self.functions) - 1
+
     def emit(self, bc, arg=0):
         self.data.append(chr(bc))
         self.data.append(chr(arg))
@@ -38,6 +43,7 @@ class CompilerContext(object):
             "".join(self.data),
             self.constants[:],
             self.strconstants[:],
+            self.functions[:],
             len(self.names)
         )
 

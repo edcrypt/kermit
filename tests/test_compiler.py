@@ -1,14 +1,20 @@
-
 from kermit.parser import parse
 from kermit.compiler import compile_ast
+from kermit.objects import W_FunctionObject
 
 
 class TestCompiler(object):
 
     def check_compile(self, source, expected):
         bc = compile_ast(parse(source))
-        assert [i.strip() for i in expected.splitlines()
-                if i.strip()] == bc.dump().splitlines()
+        self.check_bytecode(bc, expected)
+        return bc
+
+    def check_bytecode(self, bc, expected):
+        assert [
+            i.strip() for i in expected.splitlines()
+            if i.strip()
+        ] == bc.dump().splitlines()
 
     def test_basic(self):
         self.check_compile("1;", '''
@@ -78,5 +84,22 @@ class TestCompiler(object):
         JUMP_IF_FALSE 8
         LOAD_CONSTANT 0
         DISCARD_TOP 0
+        RETURN 0
+        ''')
+
+    def test_func_decl(self):
+        bc = self.check_compile('func foo() { print 1; }', '''
+        LOAD_FUNC 0
+        RETURN 0
+        ''')
+
+        assert len(bc.functions) == 1
+
+        func = bc.functions[0]
+        assert isinstance(func, W_FunctionObject)
+
+        self.check_bytecode(func.bc, '''
+        LOAD_CONSTANT 0
+        PRINT 0
         RETURN 0
         ''')

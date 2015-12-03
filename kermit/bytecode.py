@@ -3,7 +3,7 @@ bytecodes = [
     'LOAD_CONSTANT', 'LOAD_STRING', 'LOAD_VAR',
     'ASSIGN', 'DISCARD_TOP', 'JUMP_IF_FALSE', 'JUMP_BACKWARD',
     'BINARY_ADD', 'BINARY_SUB', 'BINARY_EQ', 'RETURN', 'PRINT',
-    'BINARY_LT'
+    'BINARY_LT', 'LOAD_FUNC',
 ]
 
 
@@ -22,10 +22,11 @@ BINOP = {
 class ByteCode(object):
     _immutable_fields_ = ['code', 'constants[*]', 'strconstants[*]', 'numvars']
 
-    def __init__(self, code, constants, strconstants, numvars):
+    def __init__(self, code, constants, strconstants, functions, numvars):
         self.code = code
         self.constants = constants
         self.strconstants = strconstants
+        self.functions = functions
         self.numvars = numvars
 
     def dump(self):

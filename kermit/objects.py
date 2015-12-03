@@ -66,3 +66,13 @@ class W_StringObject(W_Root):
 
     def str(self):
         return str(self.stringval)
+
+
+class W_FunctionObject(W_Root):
+
+    def __init__(self, name, bc):
+        self.name = name
+        self.bc = bc
+
+    def str(self):
+        return "func " + str(self.name) + "()"
