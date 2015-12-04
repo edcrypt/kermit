@@ -37,3 +37,16 @@ def test_if(capfd):
     ''')
     out, err = capfd.readouterr()
     assert out == '2\n'
+
+
+def test_func(capfd):
+    interpret('''
+    func hello() {
+      print "Hello World!";
+    }
+
+    hello();
+    ''')
+
+    out, err = capfd.readouterr()
+    assert out == 'Hello World!\n'

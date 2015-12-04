@@ -112,6 +112,12 @@ def execute(frame, bc):  # noqa
             frame.vars[arg] = frame.pop()
         elif c == bytecode.LOAD_VAR:
             frame.push(frame.vars[arg])
+        elif c == bytecode.LOAD_FUNC:
+            w_function = bc.functions[arg]
+            frame.push(w_function)
+        elif c == bytecode.CALL:
+            w_function = frame.pop()
+            frame.push(execute(frame, w_function.bc))
         else:
             assert False
 
