@@ -25,10 +25,18 @@ else:
 
 print("Source:")
 for i, line in enumerate(source.split("\n")):
-    print("{line:<5}{text}".format(line=(i + 1), text=line))
+    print("{line:>3} {text}".format(line=(i + 1), text=line))
+print()
 
 bc = compile_ast(parse(source))
 
 print("Bytecode:")
 for i, line in enumerate(bc.dump().split("\n")):
-    print("{line:<5}{text}".format(line=(i + 1), text=line))
+    print("{line:>3} {text}".format(line=(i + 1), text=line))
+print()
+
+print("Functions:")
+for i, func in enumerate(bc.functions):
+    print(" {0}: {name}()".format(i, name=func.name))
+    for j, line in enumerate(func.bc.dump().split("\n")):
+        print("{line:>3} {text}".format(line=(i + 1), text=line))
