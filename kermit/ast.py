@@ -179,6 +179,15 @@ class Function(Node):
         ctx.emit(bytecode.LOAD_FUNC, ctx.register_func(w))
 
 
+class Call(Node):
+
+    def __init__(self, name):
+        self.name = name
+
+    def compile(self, ctx):
+        ctx.emit(bytecode.CALL, 0)
+
+
 class Print(Node):
 
     def __init__(self, expr):

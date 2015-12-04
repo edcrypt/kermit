@@ -1,5 +1,5 @@
 from kermit.ast import (
-    Stmt, Block, ConstantInt, ConstantFloat, Function,
+    Stmt, Block, ConstantInt, ConstantFloat, Function, Call,
     ConstantString, BinOp, Variable, Assignment, While, If, Print
 )
 
@@ -71,6 +71,10 @@ def test_func_decl():
             Print(ConstantInt(1))
         ]))
     ])
+
+
+def test_func_call():
+    assert parse("foo();") == Block([Stmt(Call(Variable("foo")))])
 
 
 def test_print():

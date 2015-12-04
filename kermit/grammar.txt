@@ -16,6 +16,8 @@ statement: expr ";"
            | "print" expr ";"
 ;
 
-expr: atom ADD_SYMBOL expr | atom;
+expr: atom ADD_SYMBOL expr | call | atom;
+
+call: VARIABLE "(" ")";
 
 atom: DECIMAL | FLOAT | STRING | VARIABLE;

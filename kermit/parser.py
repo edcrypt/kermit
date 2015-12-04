@@ -9,7 +9,7 @@ from rpython.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 from kermit import kermitdir
 
 from kermit.ast import (
-    Stmt, Block, ConstantInt, ConstantFloat, Function,
+    Stmt, Block, ConstantInt, ConstantFloat, Function, Call,
     ConstantString, BinOp, Variable, Assignment, While, If, Print
 )
 
@@ -62,6 +62,9 @@ class Transformer(object):
         raise NotImplementedError
 
     def visit_expr(self, node):
+        chnode = node.children[0]
+        if chnode.symbol == "call":
+            return Call(Variable(chnode.children[0].additional_info))
         if len(node.children) == 1:
             return self.visit_atom(node.children[0])
         return BinOp(node.children[1].additional_info,
