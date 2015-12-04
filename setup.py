@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 
+from glob import glob
+
+
 from setuptools import setup, find_packages
 
 
@@ -40,6 +43,7 @@ setup(
     packages=find_packages("."),
     include_package_data=True,
     install_requires=list(parse_requirements("requirements.txt")),
+    scripts=glob("tools/*"),
     entry_points={
         "console_scripts": [
             "kermit=kermit.main:entrypoint",

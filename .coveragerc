@@ -2,6 +2,7 @@
 omit = kermit/main.py
        kermit/__init__.py
        kermit/version.py
+       tools/*
        tests/*
 
 [html]
