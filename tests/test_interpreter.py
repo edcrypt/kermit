@@ -1,5 +1,30 @@
+from pytest import raises
+from mock import patch, Mock, PropertyMock
 
-from kermit.interpreter import interpret
+
+from kermit.interpreter import execute, interpret, printable_loc
+
+
+@patch("kermit.interpreter.driver.jit_merge_point", Mock())
+def test_illegal_instruction():
+    bc = Mock()
+    frame = Mock()
+    type(bc).code = PropertyMock(return_value=["\xFF", "\x00"])
+
+    with raises(Exception):
+        execute(frame, bc)
+
+
+def test_printable_loc():
+    from kermit import bytecode
+
+    i = 0
+    pc = 0
+    bc = [chr(i)]
+
+    assert (
+        printable_loc(pc, bc) == "{0} {1}".format(pc, bytecode.bytecodes[i])
+    )
 
 
 def test_interp():
@@ -13,16 +38,70 @@ def test_print(capfd):
     assert out == '1\n'
 
 
+def test_int_add(capfd):
+    interpret('print 1 + 5;')
+    out, err = capfd.readouterr()
+    assert out == '6\n' and not err
+
+
+def test_add_int_error():
+    with raises(Exception):
+        interpret('1 + .5;')
+
+
+def test_int_lt(capfd):
+    interpret('print 1 < 5;')
+    out, err = capfd.readouterr()
+    assert out == 'True\n' and not err
+
+
+def test_int_lt_int_error(capfd):
+    with raises(Exception):
+        interpret('1 < .5;')
+
+
 def test_float_add(capfd):
     interpret('print 1.5 + .5;')
     out, err = capfd.readouterr()
     assert out == '2.0\n' and not err
 
 
+def test_float_add_int_error():
+    with raises(Exception):
+        interpret('1.5 + 5;')
+
+
 def test_float_lt(capfd):
     interpret('print 1.5 < .5;')
     out, err = capfd.readouterr()
     assert out == 'False\n' and not err
+
+
+def test_float_lt_int_error(capfd):
+    with raises(Exception):
+        interpret('1.5 < 5;')
+
+
+def test_string_add(capfd):
+    interpret('print "foo" + "bar";')
+    out, err = capfd.readouterr()
+    assert out == 'foobar\n' and not err
+
+
+def test_string_add_other_error():
+    with raises(Exception):
+        interpret('"foo" + 5;')
+
+
+def test_string_lt(capfd):
+    interpret('print "foo" < "bar";')
+    out, err = capfd.readouterr()
+    assert out == 'False\n' and not err
+
+
+def test_string_lt_other_error(capfd):
+    with raises(Exception):
+        interpret('"foo" < 5;')
 
 
 def test_while():

@@ -66,10 +66,6 @@ class Frame(object):
         return v
 
 
-def add(left, right):
-    return left + right
-
-
 def execute(frame, bc):  # noqa
     code = bc.code
     pc = 0
@@ -119,7 +115,7 @@ def execute(frame, bc):  # noqa
             w_function = frame.pop()
             frame.push(execute(frame, w_function.bc))
         else:
-            assert False
+            raise Exception("illegal instruction")
 
 
 def interpret(source):

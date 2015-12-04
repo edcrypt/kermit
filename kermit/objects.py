@@ -73,6 +73,3 @@ class W_FunctionObject(W_Root):
     def __init__(self, name, bc):
         self.name = name
         self.bc = bc
-
-    def str(self):
-        return "func " + str(self.name) + "()"

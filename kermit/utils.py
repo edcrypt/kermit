@@ -1,11 +1,7 @@
-def string_unquote(string):
-    s = string
-
-    if s.startswith('"'):
-        assert s.endswith('"')
-    else:
-        assert s.startswith("'")
-        assert s.endswith("'")
+def string_unquote(s):
+    assert len(s) >= 2
+    assert s[0] == "\""
+    assert s[-1] == "\""
 
     s = s[:-1]
     s = s[1:]

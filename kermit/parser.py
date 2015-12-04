@@ -59,7 +59,7 @@ class Transformer(object):
             return Function(name, Block(body))
         if node.children[0].additional_info == 'print':
             return Print(self.visit_expr(node.children[1]))
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def visit_expr(self, node):
         chnode = node.children[0]
@@ -83,7 +83,7 @@ class Transformer(object):
             return ConstantString(
                 str(string_unquote(chnode.additional_info))
             )
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 transformer = Transformer()
