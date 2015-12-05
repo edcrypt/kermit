@@ -1,10 +1,9 @@
 # This contains an RPython version of functions from the UNIX file
 # posixpath.py.  It would give nonsense on other platforms like Windows.
 
+
 import os
 from os.path import isabs, islink, abspath, normpath
-
-from rpython.rlib.rpath import rabspath
 
 
 def dirname(p):
@@ -25,8 +24,11 @@ def basename(p):
 
 
 def split(p):
-    """Split a pathname.  Returns tuple "(head, tail)" where "tail" is
-    everything after the final slash.  Either part may be empty."""
+    """
+    Split a pathname.  Returns tuple "(head, tail)" where "tail" is
+    everything after the final slash.  Either part may be empty.
+    """
+
     i = p.rfind('/') + 1
     assert i >= 0
     head, tail = p[:i], p[i:]
@@ -46,23 +48,30 @@ def exists(path):
 
 
 def join(a, p):
-    """Join two or more pathname components, inserting '/' as needed.
+    """
+    Join two or more pathname components, inserting '/' as needed.
     If any component is an absolute path, all previous path components
     will be discarded.  An empty last part will result in a path that
-    ends with a separator."""
+    ends with a separator.
+    """
+
     path = a
     for b in p:
         if b.startswith('/'):
             path = b
         elif path == '' or path.endswith('/'):
-            path +=  b
+            path += b
         else:
             path += '/' + b
     return path
 
+
 def realpath(filename):
-    """Return the canonical path of the specified filename, eliminating any
-symbolic links encountered in the path."""
+    """
+    Return the canonical path of the specified filename,
+    eliminating any symbolic links encountered in the path.
+    """
+
     if isabs(filename):
         bits = ['/'] + filename.split('/')[1:]
     else:
@@ -84,10 +93,12 @@ symbolic links encountered in the path."""
 
 
 def _resolve_link(path):
-    """Internal helper function.  Takes a path and follows symlinks
+    """
+    Internal helper function.  Takes a path and follows symlinks
     until we either arrive at something that isn't a symlink, or
     encounter a path we've seen before (meaning that there's a loop).
     """
+
     paths_seen = {}
     while islink(path):
         if path in paths_seen:
@@ -97,8 +108,8 @@ def _resolve_link(path):
         # Resolve where the link points to
         resolved = os.readlink(path)
         if not isabs(resolved):
-            dir = dirname(path)
-            path = normpath(join(dir, [resolved]))
+            directory = dirname(path)
+            path = normpath(join(directory, [resolved]))
         else:
             path = normpath(resolved)
     return path

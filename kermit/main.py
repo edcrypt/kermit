@@ -16,12 +16,12 @@ class Options(object):
     """Options Container"""
 
 
-def usage(prog):
+def print_usage(prog):
     print "Usage: %s [options] [file]" % prog
     return 0
 
 
-def help():
+def print_help():
     print "Options and Arguments:"
     print "  -d enable debug output"
     print "  -e evaluate the string"
@@ -31,7 +31,7 @@ def help():
     return 0
 
 
-def version():
+def print_version():
     print "%s %s" % (kermit.__name__, kermit.__version__)
     return 0
 
@@ -71,11 +71,11 @@ def main(argv):
     opts, args = parse_args(argv)
 
     if opts.help:
-        usage(prog)
-        return help()
+        print_usage(prog)
+        return print_help()
 
     if opts.version:
-        return version()
+        return print_version()
 
     interpreter = Interpreter(debug=opts.debug)
 
