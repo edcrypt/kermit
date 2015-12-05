@@ -23,7 +23,8 @@ import kermit
 from kermit import bytecode
 from kermit.parser import parse
 from kermit.compiler import Compiler
-from kermit.rreadline import readline
+
+from rlib.rreadline import readline
 
 
 BANNER = "%s %s\n" % (kermit.__name__, kermit.__version__)

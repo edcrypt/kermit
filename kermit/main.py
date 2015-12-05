@@ -8,8 +8,9 @@ from rpython.jit.codewriter.policy import JitPolicy
 
 
 import kermit
-from kermit.rpath import basename
 from kermit.interpreter import Interpreter
+
+from rlib.rpath import basename
 
 
 class Options(object):
