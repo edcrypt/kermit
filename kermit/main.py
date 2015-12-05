@@ -5,76 +5,90 @@ import sys
 
 
 from rpython.jit.codewriter.policy import JitPolicy
-from rpython.rlib.streamio import open_file_as_stream
 
 
 import kermit
-from kermit.interpreter import interpret
-
-
-USAGE = "kermit <filename>"
-VERSION = "kermit v" + kermit.__version__
+from kermit.rpath import basename
+from kermit.interpreter import Interpreter
 
 
 class Options(object):
-    """Options Object Container"""
+    """Options Container"""
 
 
-def parse_bool_arg(name, argv):
+def usage(prog):
+    print "Usage: %s [options] [file]" % prog
+    return 0
+
+
+def help():
+    print "Options and Arguments:"
+    print "  -d enable debug output"
+    print "  -e evaluate the string"
+    print "  -h display this help"
+    print "  -i inspect interactively"
+    print "  -v display the version"
+    return 0
+
+
+def version():
+    print "%s %s" % (kermit.__name__, kermit.__version__)
+    return 0
+
+
+def parse_bool_arg(name, argv, default=False):
     for i in xrange(len(argv)):
         if argv[i] == name:
-            del(argv[i])
+            del argv[i]
             return True
-    return False
+    return default
 
 
-def parse_arg(name, argv):
+def parse_arg(name, argv, default=""):
     for i in xrange(len(argv)):
         if argv[i] == name:
-            del(argv[i])
+            del argv[i]
             return argv.pop(i)
-    return ""
+    return default
 
 
 def parse_args(argv):
     opts = Options()
 
-    opts.help = parse_bool_arg("--help", argv)
-    opts.version = parse_bool_arg("--version", argv)
-
-    if opts.help:
-        print USAGE
-        raise SystemExit(0)
-
-    if opts.version:
-        print VERSION
-        raise SystemExit(0)
+    opts.debug = parse_bool_arg('-d', argv)
+    opts.eval = parse_arg("-e", argv)
+    opts.help = parse_bool_arg("-h", argv)
+    opts.inspect = parse_bool_arg("-i", argv)
+    opts.version = parse_bool_arg("-v", argv)
 
     del argv[0]
-
-    if not argv:
-        print USAGE
-        raise SystemExit(1)
 
     return opts, argv
 
 
 def main(argv):
-    try:
-        _, args = parse_args(argv)
+    prog = basename(argv[0])
+    opts, args = parse_args(argv)
 
-        filename = args[0]
+    if opts.help:
+        usage(prog)
+        return help()
 
-        return run(filename)
-    except SystemExit:
-        return 0
+    if opts.version:
+        return version()
 
+    interpreter = Interpreter(debug=opts.debug)
 
-def run(filename):
-    f = open_file_as_stream(filename)
-    source = f.readall()
-    f.close()
-    interpret(source)
+    if args:
+        interpreter.runfile(args[0])
+        if opts.inspect:
+            interpreter.repl()
+    elif opts.eval:
+        interpreter.runstring(opts.eval)
+        if opts.inspect:
+            interpreter.repl()
+    else:
+        interpreter.repl()
 
     return 0
 

@@ -48,8 +48,17 @@ class CompilerContext(object):
         )
 
 
-def compile_ast(astnode):
-    c = CompilerContext()
-    astnode.compile(c)
-    c.emit(RETURN, 0)  # noqa
-    return c.create_bytecode()
+class Compiler(object):
+
+    def __init__(self):
+        self.ctx = CompilerContext()
+
+    def compile(self, ast):
+        self.ctx.data = []
+        ast.compile(self.ctx)
+        self.ctx.emit(RETURN, 0)
+        return self.ctx.create_bytecode()
+
+
+def compile_ast(ast):
+    return Compiler().compile(ast)
