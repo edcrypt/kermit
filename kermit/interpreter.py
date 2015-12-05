@@ -101,7 +101,7 @@ class Interpreter(object):
 
         return self.runstring(s)
 
-    def repl(self, banner=None, ps1=None, ps2=None):
+    def repl(self, banner=None, ps1=None, ps2=None):  # pragma: no cover
         banner = banner or self.banner
         ps1 = ps1 or self.ps1
         ps2 = ps2 or self.ps2
@@ -158,7 +158,7 @@ class Interpreter(object):
                 # required hint indicating this is the end of a loop
                 driver.can_enter_jit(
                   pc=pc, code=code, bc=bc, frame=frame, self=self
-               )
+                )
             elif c == bytecode.PRINT:
                 item = frame.pop()
                 print item.str()
