@@ -15,7 +15,8 @@ Read http://doc.pypy.org/en/latest/jit/pyjitpl5.html for details.
 """
 
 
-from rpython.rlib import jit
+# XXX: Broken
+# from rpython.rlib import jit
 from rpython.rlib.streamio import open_file_as_stream
 
 
@@ -42,31 +43,37 @@ def printable_loc(pc, code, *_):
     return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
 
-driver = jit.JitDriver(
-   greens=['pc', 'code', 'bc'],
-   reds=['frame'],
-   virtualizables=['frame'],
-   get_printable_location=printable_loc
-)
+# XXX: Broken
+# driver = jit.JitDriver(
+#    greens=['pc', 'code', 'bc'],
+#    reds=['frame'],
+#    virtualizables=['frame'],
+#    get_printable_location=printable_loc
+# )
 
 
 class Frame(object):
     _virtualizable_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
 
     def __init__(self):
-        self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
+        # XXX: Broken
+        # self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
         self.valuestack = [None] * 3  # safe estimate!
         self.vars = [None] * 1024  # safe estimate!
         self.valuestack_pos = 0
 
     def push(self, v):
-        pos = jit.hint(self.valuestack_pos, promote=True)
+        # XXX: Broken
+        # pos = jit.hint(self.valuestack_pos, promote=True)
+        pos = self.valuestack_pos
         assert pos >= 0
         self.valuestack[pos] = v
         self.valuestack_pos = pos + 1
 
     def pop(self):
-        pos = jit.hint(self.valuestack_pos, promote=True)
+        # XXX: Broken
+        # pos = jit.hint(self.valuestack_pos, promote=True)
+        pos = self.valuestack_pos
         new_pos = pos - 1
         assert new_pos >= 0
         v = self.valuestack[new_pos]
@@ -92,7 +99,7 @@ class Interpreter(object):
         if self.debug:
             print bc.dump()
 
-        return self.run(self.frame, bc)
+        return self.run(bc)
 
     def runfile(self, filename):
         f = open_file_as_stream(filename)
@@ -116,13 +123,15 @@ class Interpreter(object):
 
             self.runstring(s)
 
-    def run(self, frame, bc):  # noqa
+    def run(self, bc):  # noqa
+        frame = self.frame
         code = bc.code
         pc = 0
 
         while True:
             # required hint indicating this is the top of the opcode dispatch
-            driver.jit_merge_point(pc=pc, code=code, bc=bc, frame=frame)
+            # XXX: Broken
+            # driver.jit_merge_point(pc=pc, code=code, bc=bc, frame=frame)
 
             c = ord(code[pc])
             arg = ord(code[pc + 1])
@@ -153,7 +162,8 @@ class Interpreter(object):
             elif c == bytecode.JUMP_BACKWARD:
                 pc = arg
                 # required hint indicating this is the end of a loop
-                driver.can_enter_jit(pc=pc, code=code, bc=bc, frame=frame)
+                # XXX: Broken
+                # driver.can_enter_jit(pc=pc, code=code, bc=bc, frame=frame)
             elif c == bytecode.PRINT:
                 item = frame.pop()
                 print item.str()
@@ -166,7 +176,7 @@ class Interpreter(object):
                 frame.push(w_function)
             elif c == bytecode.CALL:
                 w_function = frame.pop()
-                frame.push(self.run(frame, w_function.bc))
+                frame.push(self.run(w_function.bc))
             else:
                 raise Exception("illegal instruction")
 
