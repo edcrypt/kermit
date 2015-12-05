@@ -15,8 +15,7 @@ Read http://doc.pypy.org/en/latest/jit/pyjitpl5.html for details.
 """
 
 
-# XXX: Broken
-# from rpython.rlib import jit
+from rpython.rlib import jit
 from rpython.rlib.streamio import open_file_as_stream
 
 
@@ -43,37 +42,31 @@ def printable_loc(pc, code, *_):
     return str(pc) + " " + bytecode.bytecodes[ord(code[pc])]
 
 
-# XXX: Broken
-# driver = jit.JitDriver(
-#    greens=['pc', 'code', 'bc'],
-#    reds=['frame'],
-#    virtualizables=['frame'],
-#    get_printable_location=printable_loc
-# )
+driver = jit.JitDriver(
+   greens=['pc', 'code', 'bc'],
+   reds=['frame', 'self'],
+   virtualizables=['frame'],
+   get_printable_location=printable_loc
+)
 
 
 class Frame(object):
     _virtualizable_ = ['valuestack[*]', 'valuestack_pos', 'vars[*]']
 
     def __init__(self):
-        # XXX: Broken
-        # self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
+        self = jit.hint(self, fresh_virtualizable=True, access_directly=True)
         self.valuestack = [None] * 3  # safe estimate!
         self.vars = [None] * 1024  # safe estimate!
         self.valuestack_pos = 0
 
     def push(self, v):
-        # XXX: Broken
-        # pos = jit.hint(self.valuestack_pos, promote=True)
-        pos = self.valuestack_pos
+        pos = jit.hint(self.valuestack_pos, promote=True)
         assert pos >= 0
         self.valuestack[pos] = v
         self.valuestack_pos = pos + 1
 
     def pop(self):
-        # XXX: Broken
-        # pos = jit.hint(self.valuestack_pos, promote=True)
-        pos = self.valuestack_pos
+        pos = jit.hint(self.valuestack_pos, promote=True)
         new_pos = pos - 1
         assert new_pos >= 0
         v = self.valuestack[new_pos]
@@ -130,8 +123,9 @@ class Interpreter(object):
 
         while True:
             # required hint indicating this is the top of the opcode dispatch
-            # XXX: Broken
-            # driver.jit_merge_point(pc=pc, code=code, bc=bc, frame=frame)
+            driver.jit_merge_point(
+               pc=pc, code=code, bc=bc, frame=frame, self=self
+            )
 
             c = ord(code[pc])
             arg = ord(code[pc + 1])
@@ -162,8 +156,9 @@ class Interpreter(object):
             elif c == bytecode.JUMP_BACKWARD:
                 pc = arg
                 # required hint indicating this is the end of a loop
-                # XXX: Broken
-                # driver.can_enter_jit(pc=pc, code=code, bc=bc, frame=frame)
+                driver.can_enter_jit(
+                  pc=pc, code=code, bc=bc, frame=frame, self=self
+               )
             elif c == bytecode.PRINT:
                 item = frame.pop()
                 print item.str()
