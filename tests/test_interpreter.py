@@ -1,5 +1,4 @@
 from pytest import fixture, raises
-from mock import patch, Mock, PropertyMock
 
 
 from kermit.interpreter import interpret, printable_loc, Interpreter
@@ -8,15 +7,6 @@ from kermit.interpreter import interpret, printable_loc, Interpreter
 @fixture
 def interpreter(request):
     return Interpreter()
-
-
-@patch("kermit.interpreter.driver.jit_merge_point", Mock())
-def test_illegal_instruction(interpreter):
-    bc = Mock()
-    type(bc).code = PropertyMock(return_value=["\xFF", "\x00"])
-
-    with raises(Exception):
-        interpreter.run(bc)
 
 
 def test_printable_loc():

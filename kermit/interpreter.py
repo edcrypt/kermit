@@ -90,7 +90,7 @@ class Interpreter(object):
         ast = parse(s)
 
         bc = self.compiler.compile(ast)
-        if self.debug:
+        if self.debug:  # pragma: no cover
             print bc.dump()
 
         return self.run(bc)
@@ -173,8 +173,9 @@ class Interpreter(object):
             elif c == bytecode.CALL:
                 w_function = frame.pop()
                 frame.push(self.run(w_function.bc))
-            else:
-                raise Exception("illegal instruction")
+            else:  # pragma: no cover
+                # This should never happen!
+                assert False
 
 
 def interpret(source):
